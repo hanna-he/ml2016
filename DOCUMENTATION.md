@@ -1,11 +1,38 @@
 # Dokumentation - Team Java_2
 
-## Sitzung 1, Klassenhie- und Datenmodell erstennen
-- Aufgabe ist das Modellieren der Klassenhierarchie zwischen:
-	- ToolPart, enthält jeweils eine der 8 Hauptkategorien
-	- ToolSub, enthält jeweils 8 Subkategorien zur Hauptkategorie
-	- Tool, enthält Referenz zu ToolSubClass und Bezeichner
-- Weiterhin müssen die vorliegenden Informationen verortet werden:
-	- Kategorie und Subkategorie
-	- Kategorienbezeichnung und zusätzliche Anmerkungen
-	- Liste mit Kontexten
+## Inhalt
+- Anforderungen
+- Lösungsvorschläge & Workflows
+- Aufgabenverteilung
+- Status & Probleme
+
+## Projektplanung
+1. Datenmodellierung
+2. Datenimport (TSV Parser)
+3. Datenbereiningung (Stopwords)
+
+### Datenmodell
+- ToolPart, enthält jeweils eine der 8 Hauptkategorien
+- ToolSub, enthält jeweils 8 Subkategorien zur Hauptkategorie
+- Tool, enthält Referenz zu ToolSubClass und Bezeichner
+
+### Datenimport
+- TSV in Datenmodell überführen
+
+### Datenaufbereitung
+- Lemmatisieren
+- Stemming
+- Kontextualisierung
+
+### Feature-Engineering
+- Chi-Quadat
+- TF/IDF
+- n-Gramme
+
+### Analyse
+- Naive Bayes
+- Support Vector Machines
+- k-nearest-Neighbour
+
+### Auswertung
+- Precision und Recall

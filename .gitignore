@@ -1,1 +1,7 @@
 /target/
+
+resources/opennlp/*
+!resources/opennlp/*.url
+
+resources/matetools/*
+!resources/matetools/*.url
