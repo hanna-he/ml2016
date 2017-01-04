@@ -26,7 +26,12 @@ public class ModelMaker {
 		for(ToolPart toolPart: toolPartList){
 			BagOfWords bow = new BagOfWords(feature, toolPart.getID());
 			for(Tool tool: toolPart.getTools()){
-				bow.addTool(featureFactory.createFeature(feature).processWords(tool));
+				Map<String, Double> boW = featureFactory.createFeature(feature).processWords(tool.getContext());
+				Double totalWordCount = boW.get("totalWordCount");
+				boW.remove("totalWordCount");
+				tool.setWordMap(boW);
+				tool.setWordCount(totalWordCount);
+				bow.addTool(tool);
 			}
 			model.addBoW(bow);
 		}

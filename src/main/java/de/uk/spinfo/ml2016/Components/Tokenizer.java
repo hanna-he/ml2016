@@ -22,6 +22,7 @@ public class Tokenizer {
 
 	public List<String> tokenize(String string) {
 		List<String> result = new ArrayList<String>();
+		//Klammern hinzugefügt
 		Pattern punctuation = Pattern.compile("[,.;:!?&\\-]");
 
 		for (String sentence : sentencer.sentDetect(string))
@@ -31,6 +32,12 @@ public class Tokenizer {
 					result.add(token);
 
 		return result;
+	}
+	public static void main(String[] args) throws Exception{
+		Tokenizer tok = new Tokenizer();
+		for(String s: tok.tokenize("lala dieses sind, ein satz.")){
+			System.out.println(s);
+		}
 	}
 
 }

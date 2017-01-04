@@ -12,7 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uk.spinfo.ml2016.Components.Context;
+import de.uk.spinfo.ml2016.Components.ContextSearcher;
+import de.uk.spinfo.ml2016.Components.Tokenizer;
 import de.uk.spinfo.ml2016.Structures.Tool;
 import de.uk.spinfo.ml2016.Structures.ToolPart;
 import de.uk.spinfo.ml2016.Structures.ToolSub;
@@ -45,7 +46,8 @@ public class TsvParser {
 	}
 
 	public void parseTsv(File file) {
-		Context context = new Context();
+		ContextSearcher context = new ContextSearcher();
+		
 		try (BufferedReader bReader = new BufferedReader(
 				new InputStreamReader(new FileInputStream(file), "UTF8"))){
 
@@ -65,6 +67,7 @@ public class TsvParser {
 
 					String toolSubName = lineSplit[3];
 //					contextList = context.enrichContext(name);
+//					contextList = tokenizer.tokenize(lineSplit[11]);
 					contextList.add(lineSplit[11]);
 					
 					ToolPart tp = new ToolPart(toolNumber);
