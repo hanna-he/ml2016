@@ -22,22 +22,40 @@ public class Tokenizer {
 
 	public List<String> tokenize(String string) {
 		List<String> result = new ArrayList<String>();
-		//Klammern hinzugefügt
-		Pattern punctuation = Pattern.compile("[,.;:!?&\\-]");
+		// Klammern hinzugefügt
+		Pattern punctuation = Pattern.compile("[,.;:!?&\\-)(]");
 
-		for (String sentence : sentencer.sentDetect(string))
-			for (String token : tokenizer.tokenize(sentence))
+		for (String sentence : sentencer.sentDetect(string)){
+			for (String token : tokenizer.tokenize(sentence)){
 				// strip punctuation
-				if (!punctuation.matcher(token).find())
+				if (!punctuation.matcher(token).find()){
+					if (token.contains("/")&&!token.equals("/")&&!token.equals("//")) {
+						String[] split = token.split("/");
+						int len = split.length;
+						//gibt zb start/amadeus/merlin
+						for(int i = 0; i<len; i++){
+							//zb bei Lehrer/in "in" kein eigenständiges Token
+							if (!split[i].startsWith("in")&& i!=0) {
+								result.add(split[i]);
+							}
+						}					
+						token = split[0];
+					}
+					//um m/w rauszuschmeißen
+					if(token.length()>1){
 					result.add(token);
-
-		return result;
-	}
-	public static void main(String[] args) throws Exception{
-		Tokenizer tok = new Tokenizer();
-		for(String s: tok.tokenize("lala dieses sind, ein satz.")){
-			System.out.println(s);
+					}
+				}
+			}
 		}
+
+	
+	
+		return result;
+		
 	}
+	
+
+	
 
 }

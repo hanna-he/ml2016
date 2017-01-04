@@ -46,8 +46,7 @@ public class TsvParser {
 	}
 
 	public void parseTsv(File file) {
-		ContextSearcher context = new ContextSearcher();
-		
+			
 		try (BufferedReader bReader = new BufferedReader(
 				new InputStreamReader(new FileInputStream(file), "UTF8"))){
 
@@ -102,7 +101,6 @@ public class TsvParser {
 		IOException ioe) {
 			ioe.printStackTrace();
 		}
-		System.out.println(tools.size());
 	}
 	
 	

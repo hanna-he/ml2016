@@ -41,7 +41,7 @@ public class Stems extends Feature{
 		germanStemmer stemmer = new germanStemmer();
 		try {
 			
-			for (String word: text) {
+			for (String word: tokenizeWords(text)) {
 				stemmer.setCurrent(word);
 				if (stemmer.stem()) {
 					word = stemmer.getCurrent();

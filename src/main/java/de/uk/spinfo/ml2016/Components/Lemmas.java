@@ -29,6 +29,7 @@ public class Lemmas extends Feature {
 		List<String> sentenceAsList = new ArrayList<>();
 		try{
 		List<String> tokens = tokenizeWords(text);
+//		System.out.println("Tokens: "+tokens.toString());
 
 		tokens.add(0, "<root>");
 		sentence.init(tokens.toArray(new String[0]));
@@ -42,6 +43,7 @@ public class Lemmas extends Feature {
 						.filter(e -> !e.equals("--")).collect(Collectors.toList());
 		for (String word : sentenceAsList) {
 			addWord(word, wordMap);
+//			System.out.println(word);
 			toolWordCount++;
 		}
 

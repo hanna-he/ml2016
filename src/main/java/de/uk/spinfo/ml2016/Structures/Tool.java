@@ -29,8 +29,8 @@ public class Tool {
 		return this.context;
 	}
 
-	public void addContext(String newcontext) {
-		this.context.add(newcontext);
+	public void addContext(List<String> newcontext) {
+		this.context.addAll(newcontext);
 	}
 
 	public void setWordMap (Map<String, Double> wordMap){

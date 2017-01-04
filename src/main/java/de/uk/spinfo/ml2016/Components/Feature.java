@@ -7,6 +7,14 @@ import java.util.Map;
 import de.uk.spinfo.ml2016.Structures.Tool;
 
 public abstract class Feature {
+	protected Tokenizer tokenizer;
+	public Feature(){
+		try {
+			this.tokenizer = new Tokenizer();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 
 //	public abstract Tool processWords(Tool tool);
@@ -22,12 +30,11 @@ public abstract class Feature {
 	}
 	protected List<String> tokenizeWords(List<String> toTokenize) throws Exception{
 		List<String> tokenizedWords = new ArrayList<>();
-		Tokenizer tokenizer = new Tokenizer();
-		
+	
 		for(String line: toTokenize){
 			line = line.toLowerCase();
 			tokenizedWords.addAll(tokenizer.tokenize(line));
-		}
+			}
 		return tokenizedWords;
 	}
 

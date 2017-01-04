@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.uk.spinfo.ml2016.Components.ContextSearcher;
 import de.uk.spinfo.ml2016.Components.Feature;
 import de.uk.spinfo.ml2016.Components.FeatureFactory;
 import de.uk.spinfo.ml2016.io.TsvParser;
@@ -19,14 +20,17 @@ public class ModelMaker {
 		return model;
 	}
 
-	private Model createModel(String feature, Set<ToolPart> toolPartList){
+	private Model createModel(String featureString, Set<ToolPart> toolPartList){
 		
-		Model model = new Model(feature);
+		Model model = new Model(featureString);
 		FeatureFactory featureFactory = new FeatureFactory();
+		Feature feature = featureFactory.createFeature(featureString);
+		ContextSearcher contextsearcher = new ContextSearcher(feature);
 		for(ToolPart toolPart: toolPartList){
-			BagOfWords bow = new BagOfWords(feature, toolPart.getID());
+			BagOfWords bow = new BagOfWords(featureString, toolPart.getID());
 			for(Tool tool: toolPart.getTools()){
-				Map<String, Double> boW = featureFactory.createFeature(feature).processWords(tool.getContext());
+				tool.addContext(contextsearcher.getContext(tool.getName()));
+				Map<String, Double> boW = feature.processWords(tool.getContext());
 				Double totalWordCount = boW.get("totalWordCount");
 				boW.remove("totalWordCount");
 				tool.setWordMap(boW);
@@ -34,6 +38,7 @@ public class ModelMaker {
 				bow.addTool(tool);
 			}
 			model.addBoW(bow);
+			
 		}
 		
 		return model;

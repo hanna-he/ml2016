@@ -28,7 +28,8 @@ public class Main {
 	tsvp.parseTsv(f);
 	ModelMaker mm = new ModelMaker();
 	mm.makeModel("Stems", tsvp.getToolPartSet());
-	mm.makeModel("Lemmas", tsvp.getToolPartSet());
+//	mm.makeModel("Lemmas", tsvp.getToolPartSet());
+//	mm.makeModel("3-Grams", tsvp.getToolPartSet());
 	
 
 		
