@@ -6,7 +6,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import de.uk.spinfo.ml2016.Structures.Tool;
@@ -38,21 +40,28 @@ public class ContextSearcher {
 	//
 	// }
 
-	public List<String> getContext(String toolname) {
+	public Tool getContext(Tool tool) {
+		String toolname = tool.getName();
 		List<String> context = new ArrayList<>();
-		List<String> possibleArticles = getPathToTitle(toolname, feature);
-		for (String pathToArticleAndTitle : possibleArticles) {
-			context.addAll(readDocument(pathToArticleAndTitle.split("\t")[0], pathToArticleAndTitle.split("\t")[1]));
-		}
-		if (context.isEmpty()) {
-			System.out.println("Info: Kein Kontext gefunden für " + toolname);
+		Map<Tool,List<String>> pathToTitleOfTool = new HashMap<>();
+		List<String> possibleArticles = pathToTitleOfTool.get(tool);
+		if (!context.isEmpty()) {
+			for (String pathToArticleAndTitle : possibleArticles) {
+				context.addAll(
+						readDocument(pathToArticleAndTitle.split("\t")[0], pathToArticleAndTitle.split("\t")[1]));
+				System.out.println("Info: Kontext gefunden für " + toolname);
+			}
 		} else {
-			System.out.println("Info: Kontext gefunden für " + toolname);
+			System.out.println("Info: Kein Kontext gefunden für " + toolname);
+
 		}
-		return context;
+		tool.addContext(context);
+		return tool;
 	}
 
-	private List<String> getPathToTitle(String toolname, Feature feature) {
+	private Map<Tool,List<String>> getPathToTitle(Tool tool) {
+		Map<Tool,List<String>> result = new HashMap<>();
+		String toolname = tool.getName();
 		List<String> possibleTitles = new ArrayList<>();
 		// FeatureFactory featurefactory = new FeatureFactory();
 		try (BufferedReader bReader = new BufferedReader(
@@ -63,6 +72,7 @@ public class ContextSearcher {
 				if (title.contains(toolname)) {
 					possibleTitles.add(line);
 				} else {
+					System.out.println(title+" "+toolname);
 					List<String> fakeList = new ArrayList<>();
 					fakeList.add(title);
 					Set<String> featuredWords = this.feature.processWords(fakeList).keySet();
@@ -71,12 +81,11 @@ public class ContextSearcher {
 					anotherFakeList.add(toolname);
 					Set<String> featuredToolname = this.feature.processWords(anotherFakeList).keySet();
 					featuredToolname.remove("totalWordCount");
+					tool.setFeaturedName(featuredToolname);
 					for (String toolpartname : featuredToolname) {
 						for (String word : featuredWords) {
 							if (toolpartname.equals(word)) {
-								System.out.println(toolpartname + "(tpn) " + word + "(word)");
 								possibleTitles.add(line);
-								System.out.println("z75");
 							}
 						}
 					}
@@ -86,8 +95,9 @@ public class ContextSearcher {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+		result.put(tool, possibleTitles);
 
-		return possibleTitles;
+		return result;
 
 	}
 
@@ -117,18 +127,16 @@ public class ContextSearcher {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		
 
 		return context;
 
 	}
 
-	
-	//test:
-	public static void main(String[] args) {
-		FeatureFactory ff = new FeatureFactory();
-		ContextSearcher cs = new ContextSearcher(ff.createFeature("Stems"));
-		cs.getContext("labor");
-
-	}
+	// test:
+//	public static void main(String[] args) {
+//		FeatureFactory ff = new FeatureFactory();
+//		ContextSearcher cs = new ContextSearcher(ff.createFeature("Stems"));
+//		cs.getContext("labor");
+//
+//	}
 }

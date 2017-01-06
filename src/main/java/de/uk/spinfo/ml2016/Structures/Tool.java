@@ -2,6 +2,7 @@ package de.uk.spinfo.ml2016.Structures;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Tool {
 
@@ -10,7 +11,9 @@ public class Tool {
 	private List<String> context;
 	private Map<String, Double> wordMap;
 	private Map<Tool, Double> coCounts;
+	private Set<Tool> referencingTools;
 	private Double wordCount;
+	private Set<String> featuredName;
 	
 	
 	public Tool(String name, List<String> context, ToolSub tsc) {
@@ -54,6 +57,18 @@ public class Tool {
 	}
 	public void setWordCount(Double wordCount){
 		this.wordCount = wordCount;
+	}
+	public void setFeaturedName(Set<String> fn){
+		this.featuredName = fn;
+	}
+	public Set<String> getFeaturedName(){
+		return this.featuredName;
+	}
+	public Set<Tool> getReferencingTools(){
+		return this.referencingTools;
+	}
+	public void setReferencingTools(Set<Tool> refTools){
+		this.referencingTools = refTools;
 	}
 	
 	@Override
