@@ -40,30 +40,31 @@ public class ContextSearcher {
 	//
 	// }
 
-	public Tool getContext(Tool tool) {
+	public void getContext(Tool tool) {
 		String toolname = tool.getName();
 		List<String> context = new ArrayList<>();
-		Map<Tool,List<String>> pathToTitleOfTool = new HashMap<>();
-		List<String> possibleArticles = pathToTitleOfTool.get(tool);
-		if (!context.isEmpty()) {
+		// Map<Tool, List<String>> pathToPossibleTitles = getPathToTitle(tool);
+		// List<String> possibleArticles = pathToPossibleTitles.get(tool);
+		List<String> possibleArticles = getPathToTitle(tool);
+
+		if (!possibleArticles.isEmpty()) {
 			for (String pathToArticleAndTitle : possibleArticles) {
 				context.addAll(
 						readDocument(pathToArticleAndTitle.split("\t")[0], pathToArticleAndTitle.split("\t")[1]));
 				System.out.println("Info: Kontext gefunden für " + toolname);
+
 			}
 		} else {
 			System.out.println("Info: Kein Kontext gefunden für " + toolname);
 
 		}
 		tool.addContext(context);
-		return tool;
+		// return tool;
 	}
 
-	private Map<Tool,List<String>> getPathToTitle(Tool tool) {
-		Map<Tool,List<String>> result = new HashMap<>();
+	private List<String> getPathToTitle(Tool tool) {
 		String toolname = tool.getName();
 		List<String> possibleTitles = new ArrayList<>();
-		// FeatureFactory featurefactory = new FeatureFactory();
 		try (BufferedReader bReader = new BufferedReader(
 				new InputStreamReader(new FileInputStream("resources/sortedWiki/index.txt"), "UTF8"))) {
 			while (bReader.ready()) {
@@ -72,7 +73,7 @@ public class ContextSearcher {
 				if (title.contains(toolname)) {
 					possibleTitles.add(line);
 				} else {
-					System.out.println(title+" "+toolname);
+					// System.out.println(title + " " + toolname);
 					List<String> fakeList = new ArrayList<>();
 					fakeList.add(title);
 					Set<String> featuredWords = this.feature.processWords(fakeList).keySet();
@@ -82,6 +83,7 @@ public class ContextSearcher {
 					Set<String> featuredToolname = this.feature.processWords(anotherFakeList).keySet();
 					featuredToolname.remove("totalWordCount");
 					tool.setFeaturedName(featuredToolname);
+					// dauert sehr lange
 					for (String toolpartname : featuredToolname) {
 						for (String word : featuredWords) {
 							if (toolpartname.equals(word)) {
@@ -95,9 +97,8 @@ public class ContextSearcher {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		result.put(tool, possibleTitles);
 
-		return result;
+		return possibleTitles;
 
 	}
 
@@ -119,6 +120,7 @@ public class ContextSearcher {
 					}
 					if (line.equals("</doc>")) {
 						contextFound = false;
+						context.remove(line);
 					}
 
 				}
@@ -133,10 +135,10 @@ public class ContextSearcher {
 	}
 
 	// test:
-//	public static void main(String[] args) {
-//		FeatureFactory ff = new FeatureFactory();
-//		ContextSearcher cs = new ContextSearcher(ff.createFeature("Stems"));
-//		cs.getContext("labor");
-//
-//	}
+	public static void main(String[] args) {
+		// FeatureFactory ff = new FeatureFactory();
+		// ContextSearcher cs = new ContextSearcher(ff.createFeature("Stems"));
+		// cs.getContext("labor");
+
+	}
 }

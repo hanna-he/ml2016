@@ -21,7 +21,7 @@ public class BagOfWords {
 	}
 	
 	
-	public Integer getID(){
+	public int getID(){
 		return this.id;
 	}
 	public void addTool(Tool tool){
@@ -61,6 +61,26 @@ public class BagOfWords {
 			s.append(word +" : "+wordMap.get(word)+"\n");
 		}
 		return s.toString();
+	}
+	@Override
+	public boolean equals(Object o){
+		if(this == o){
+			return true;
+		}
+		if (!this.feature.equals( ((BagOfWords)o).feature ) ){
+			return false;
+		}
+		if(this.id != ((BagOfWords)o).id){
+			return false;
+		}
+	
+		else{
+			return true;
+		}
+	}
+	@Override
+	public int hashCode(){
+		return this.feature.hashCode()+this.getID();
 	}
 
 	

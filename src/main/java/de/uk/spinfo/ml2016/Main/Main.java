@@ -18,8 +18,6 @@ import de.uk.spinfo.ml2016.Structures.ToolSub;
 import de.uk.spinfo.ml2016.io.TsvParser;
 
 public class Main {
-	FeatureFactory featureFactory = new FeatureFactory();
-
 	
 	
 	public static void main(String[] args){
@@ -27,12 +25,10 @@ public class Main {
 	TsvParser tsvp = new TsvParser();
 	tsvp.parseTsv(f);
 	ModelMaker mm = new ModelMaker();
-	mm.makeModel("Stems", tsvp.getToolPartSet());
-//	mm.makeModel("Lemmas", tsvp.getToolPartSet());
+//	mm.makeModel("Stems", tsvp.getToolPartSet());
+	mm.makeModel("Lemmas", tsvp.getToolPartSet());
 //	mm.makeModel("3-Grams", tsvp.getToolPartSet());
 	
-
-		
 
 
 }

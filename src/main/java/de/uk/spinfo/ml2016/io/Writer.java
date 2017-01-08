@@ -54,10 +54,6 @@ public class Writer {
 				jsClassList.add(obj2);
 			}
 			obj1.put("Classes", jsClassList);
-			// StringWriter out = new StringWriter();
-			// obj.writeJSONString(out);
-			// obj.toJSONString();
-			// String jsonText = out.toString();
 			bWriter.write(obj1.toJSONString());
 			System.out.println(obj1.toJSONString());
 			bWriter.flush();

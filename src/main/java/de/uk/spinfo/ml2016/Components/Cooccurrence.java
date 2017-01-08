@@ -15,17 +15,18 @@ public class Cooccurrence {
 	private Set<Tool> toolSet;
 	Set<ToolPart> toolPartList;
 	
+	
 	public Cooccurrence(Set<ToolPart> toolPartList){
 		this.toolPartList = toolPartList;
+		this.toolSet = new HashSet<>();
 		for(ToolPart toolpart : toolPartList){
-			for(Tool tool: toolpart.getTools()){
-				this.toolSet.add(tool);
-			}
+			this.toolSet.addAll(toolpart.getTools());
+			
 		}
 	}
 
 
-	public Tool countCooccurrence(Tool tool) {
+	public void countCooccurrence(Tool tool) {
 		Map<Tool, Double> coCount = new HashMap<>();
 		Map<String, Double> wordMap = tool.getWordMap();
 		for (Tool otherTool : this.toolSet) {
@@ -35,7 +36,7 @@ public class Cooccurrence {
 			}
 		}
 		tool.setCooccurrenceCounts(coCount);
-		return tool;
+//		return tool;
 	}
 //	private Set<Tool> getAllToolsAsList(Set<ToolPart> toolPartList){
 //		Set<Tool> toolSet = new HashSet<>();
@@ -48,19 +49,19 @@ public class Cooccurrence {
 //	}
 	
 	//gibt die anderen Tools, die in ihrem Kontext dieses Tool nennen zurück
-	public Tool getReferencingTools(Tool tool){
+	public void getReferencingTools(Tool tool){
 		Set<Tool> referencingTools = new HashSet<>();
 		for(Tool otherTool: this.toolSet){
 			if(otherTool != tool){
 				for(String word : tool.getFeaturedName()){
-					if(tool.getWordMap().containsKey(word)){
-						referencingTools.add(tool);
+					if(otherTool.getWordMap().containsKey(word)){
+						referencingTools.add(otherTool);
 					}
 				}
 			}
 		}
 		tool.setReferencingTools(referencingTools);
-		return tool;
+//		return tool;
 	}
 	
 }

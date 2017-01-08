@@ -42,7 +42,7 @@ public class Tokenizer {
 						}
 						token = split[0];
 					}
-					if (token.contains("-")) {
+					if (token.contains("-")&&!token.equals("-")) {
 						String[] split = token.split("-");
 						int len = split.length;
 						for (int i = 1; i < len; i++) {

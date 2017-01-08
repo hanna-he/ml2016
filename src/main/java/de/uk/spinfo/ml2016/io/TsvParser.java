@@ -67,7 +67,10 @@ public class TsvParser {
 					String toolSubName = lineSplit[3];
 //					contextList = context.enrichContext(name);
 //					contextList = tokenizer.tokenize(lineSplit[11]);
-					contextList.add(lineSplit[11]);
+					if(!lineSplit[11].equalsIgnoreCase("na")){
+						contextList.add(lineSplit[11]);
+					}
+					
 					
 					ToolPart tp = new ToolPart(toolNumber);
 
