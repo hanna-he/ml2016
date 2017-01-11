@@ -31,16 +31,13 @@ public class Model {
 				bow.addTool(tool);
 			}
 		}
+		//evtl noch neues BOW anlegen, falls es es noch nicht gibt
 	}
 
 	public String getFeature() {
 		return this.feature;
 	}
 
-	@Override
-	public String toString() {
-		String result = this.feature;
-		return result;
-	}
+
 
 }

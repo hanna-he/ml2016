@@ -14,7 +14,8 @@ import java.util.Set;
 import de.uk.spinfo.ml2016.Structures.Tool;
 
 public class ContextSearcher {
-	Feature feature;
+	private Feature feature;
+	
 
 	public ContextSearcher(Feature feature) {
 		this.feature = feature;
@@ -40,26 +41,28 @@ public class ContextSearcher {
 	//
 	// }
 
-	public void getContext(Tool tool) {
+	public boolean getContext(Tool tool) {
+		boolean contextFound = false;
 		String toolname = tool.getName();
 		List<String> context = new ArrayList<>();
-		// Map<Tool, List<String>> pathToPossibleTitles = getPathToTitle(tool);
-		// List<String> possibleArticles = pathToPossibleTitles.get(tool);
 		List<String> possibleArticles = getPathToTitle(tool);
 
 		if (!possibleArticles.isEmpty()) {
+			contextFound=true;
 			for (String pathToArticleAndTitle : possibleArticles) {
 				context.addAll(
 						readDocument(pathToArticleAndTitle.split("\t")[0], pathToArticleAndTitle.split("\t")[1]));
-				System.out.println("Info: Kontext gefunden für " + toolname);
+				System.out.println("Info: Kontext gefunden für " + toolname+ "("+tool.getFeaturedName()+")");
+				
 
 			}
 		} else {
-			System.out.println("Info: Kein Kontext gefunden für " + toolname);
+			System.out.println("Info: Kein Kontext gefunden für " + toolname+"("+tool.getFeaturedName()+")");
 
 		}
 		tool.addContext(context);
-		// return tool;
+		return contextFound;
+		
 	}
 
 	private List<String> getPathToTitle(Tool tool) {
@@ -134,11 +137,5 @@ public class ContextSearcher {
 
 	}
 
-	// test:
-	public static void main(String[] args) {
-		// FeatureFactory ff = new FeatureFactory();
-		// ContextSearcher cs = new ContextSearcher(ff.createFeature("Stems"));
-		// cs.getContext("labor");
 
-	}
 }

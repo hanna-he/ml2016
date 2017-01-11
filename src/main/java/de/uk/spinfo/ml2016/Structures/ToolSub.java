@@ -14,14 +14,24 @@ public class ToolSub {
 	private ToolPart tp;
 	
 	private Set<Tool> toolsList;
-
+	
+	//brauchen wir unbedingt diesen Konstruktor?
 	public ToolSub(String id, String name, ToolPart tp) {
 		this.id = id;
 		this.name = name;
 		this.tp = tp;
 		this.toolsList = new HashSet<>();
 	}
-	
+	//im Prinzip würde ja dieser reichen:
+	public ToolSub(String id, String name) {
+		this.id = id;
+		this.name = name;
+		this.tp = new ToolPart(Character.getNumericValue(id.charAt(0)));
+		this.toolsList = new HashSet<>();
+	}
+	public String getName(){
+		return this.name;
+	}
 	public ToolPart getToolPart(){
 		return this.tp;
 	}
@@ -47,10 +57,13 @@ public class ToolSub {
 		if(this == o){
 			return true;
 		}
-		if (this.getToolPart().getID() !=( ((ToolSub)o).getToolPart().getID() ) ){
+		if (this.getToolPart().getID() !=( (ToolSub)o).getToolPart().getID() ){
 			return false;
 		}
-		if (this.id !=( ((ToolSub)o).id ) ){
+		if (!this.id.equals(((ToolSub)o).id ) ){
+			return false;
+		}
+		if (!this.name.equals(((ToolSub)o).name )) {
 			return false;
 		}
 	

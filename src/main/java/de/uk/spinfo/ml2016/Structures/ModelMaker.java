@@ -18,11 +18,16 @@ import de.uk.spinfo.ml2016.io.TsvParser;
 import de.uk.spinfo.ml2016.io.Writer;
 
 public class ModelMaker {
-
+	private int contextFound =0;
+	private int contextFoundInOtherTool=0;
+	private int totalToolCount=0;
+	
 	public Model makeModel(String feature, Set<ToolPart> toolPartList) {
-		Model model;
-		model = createModel(feature, toolPartList);
-		 Writer.writeB(model);
+		// for(ToolPart tp: toolPartList){
+		// System.out.println(tp.getID());
+		// }
+		Model model = createModel(feature, toolPartList);
+		Writer.writeB(model);
 		return model;
 	}
 
@@ -34,15 +39,20 @@ public class ModelMaker {
 		ContextSearcher contextsearcher = new ContextSearcher(feature);
 		Set<Tool> toolsWoutContext = new HashSet<>();
 		for (ToolPart toolPart : toolPartList) {
+			System.out.println(toolPart.getID());
 			BagOfWords bow = new BagOfWords(featureString, toolPart.getID());
 			for (Tool tool : toolPart.getTools()) {
-				contextsearcher.getContext(tool);
-				Map<String, Double> boW = feature.processWords(tool.getContext());
-				Double totalWordCount = boW.get("totalWordCount");
-				boW.remove("totalWordCount");
-				tool.setWordMap(boW);
+				this.totalToolCount++;
+				if(contextsearcher.getContext(tool)){
+					this.contextFound++;
+				};
+				Map<String, Double> wordMap = feature.processWords(tool.getContext());
+				Double totalWordCount = wordMap.get("totalWordCount");
+				wordMap.remove("totalWordCount");
+				tool.setWordMap(wordMap);
 				tool.setWordCount(totalWordCount);
 				cooccurrence.countCooccurrence(tool);
+				bow.addToolSub(tool.getToolSub());
 				if (tool.getContext().isEmpty()) {
 					toolsWoutContext.add(tool);
 				} else {
@@ -51,26 +61,15 @@ public class ModelMaker {
 			}
 			model.addBoW(bow);
 		}
-		
-		//Kontext von referenzierenden Tools hinzufügen
-		try {
-			BufferedWriter bWriter = new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream("resources/ToolsWithoutContext.txt", false), "UTF-8"));
-		for (Tool toolagain : toolsWoutContext) {
-			bWriter.write("\n Für Tool : "+toolagain.getName()+" wurden die Kontexte folgender Tools hinzugefügt:\n");
-			cooccurrence.getReferencingTools(toolagain);
-			for (Tool refTool : toolagain.getReferencingTools()) {
-				bWriter.write(refTool.getName()+", ");
-				toolagain.addContext(refTool.getContext());
-			}
-			toolagain.getToolSub().getToolPart().getID();
 
-			model.addToolToBagOfWordsWithID(toolagain);
-		}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		// Kontext von referenzierenden Tools hinzufügen
+		this.contextFoundInOtherTool = cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
+	
 		
+		System.out.println("Insgesamt gibt es "+this.totalToolCount+" Tools \n");
+		System.out.println("Für "+this.contextFound+" Tools wurden Wikikontexte gefunden \n");
+		System.out.println("Für "+this.contextFoundInOtherTool+" Tools wurde der Kontext von referenzierenden Tools verwendet \n");
+		System.out.println("Für "+(this.totalToolCount-this.contextFoundInOtherTool)+" Tools wurden gar keine Kontexte gefunden \n");
 		return model;
 	}
 

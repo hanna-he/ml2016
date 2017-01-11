@@ -6,22 +6,22 @@ import java.util.Set;
 
 public class ToolPart {
 
-	private Integer id;
+	private int id;
 	private Set<ToolSub> toolSubList;
 
 	// private String name;
 
-	public ToolPart(Integer id) {
+	public ToolPart(int id) {
 		this.id = id;
 		this.toolSubList = new HashSet<>();
 		// this.name = name;
 	}
 	
-	public Integer getID(){
+	public int getID(){
 		return this.id;
 	}
 	
-	public Set<ToolSub> getToolSubList(){
+	public Set<ToolSub> getToolSubSet(){
 		return this.toolSubList;
 	}
 	public void addToolSub(ToolSub toolsub){
@@ -47,7 +47,7 @@ public class ToolPart {
 		if(this == o){
 			return true;
 		}
-		if (this.id ==( ((ToolPart)o).id ) ){
+		if (this.id == ((ToolPart)o).id  ){
 			return true;
 		}
 	

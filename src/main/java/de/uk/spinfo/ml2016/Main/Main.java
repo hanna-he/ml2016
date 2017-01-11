@@ -11,10 +11,13 @@ import java.util.Set;
 import de.uk.spinfo.ml2016.Components.Feature;
 import de.uk.spinfo.ml2016.Components.FeatureFactory;
 import de.uk.spinfo.ml2016.Preprocessing.DumpReader;
+import de.uk.spinfo.ml2016.Structures.BagOfWords;
+import de.uk.spinfo.ml2016.Structures.Model;
 import de.uk.spinfo.ml2016.Structures.ModelMaker;
 import de.uk.spinfo.ml2016.Structures.Tool;
 import de.uk.spinfo.ml2016.Structures.ToolPart;
 import de.uk.spinfo.ml2016.Structures.ToolSub;
+import de.uk.spinfo.ml2016.io.JsonReader;
 import de.uk.spinfo.ml2016.io.TsvParser;
 
 public class Main {
@@ -26,7 +29,8 @@ public class Main {
 	tsvp.parseTsv(f);
 	ModelMaker mm = new ModelMaker();
 //	mm.makeModel("Stems", tsvp.getToolPartSet());
-	mm.makeModel("Lemmas", tsvp.getToolPartSet());
+	Model model = mm.makeModel("Lemmas", tsvp.getToolPartSet());
+//	Model model2 =JsonReader.readFile("/resources/json/Lemmas.json");
 //	mm.makeModel("3-Grams", tsvp.getToolPartSet());
 	
 

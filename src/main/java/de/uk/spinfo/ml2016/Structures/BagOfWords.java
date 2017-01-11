@@ -2,6 +2,7 @@ package de.uk.spinfo.ml2016.Structures;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,31 +11,51 @@ public class BagOfWords {
 	private String feature;
 	private Integer id;
 	private Map<String, Double> wordMap;
-	private List<Tool> toolsList;
+	private Set<Tool> toolSet;
+	private Set<ToolSub> toolSubSet;
 
 	
 	public BagOfWords(String feature, int id){
-		this.feature=feature;
 		this.id = id;
+		this.feature=feature;
 		this.wordMap = new HashMap<>();
-		this.toolsList = new ArrayList<>();
+		this.toolSet = new HashSet<>();
+		this.toolSubSet = new HashSet<>();
 	}
 	
-	
+	public String getFeature(){
+		return this.feature;
+	}
 	public int getID(){
 		return this.id;
 	}
+	public Set<ToolSub> getToolSubSet(){
+		return this.toolSubSet;
+	}
 	public void addTool(Tool tool){
-		this.toolsList.add(tool);		
+		this.toolSet.add(tool);		
 	}
-	public List<Tool> getTools(){
-		return this.toolsList;
+	public Set<Tool> getTools(){
+		return this.toolSet;
 	}
+	public void addToolSub(ToolSub toolsub){
+		this.toolSubSet.add(toolsub);		
+	}
+	
 	public Set<String> getWords(){
 		if(this.wordMap.isEmpty()){
 			processWordMap();
 		}
 		return wordMap.keySet();
+	}
+	public ToolSub getToolSubWithId(String id){
+		ToolSub result = null;
+		for(ToolSub toolsub: this.toolSubSet){
+			if(toolsub.getID().equals(id)){
+				result = toolsub;
+			}
+		}
+		return result;
 	}
 	
 	public Map<String, Double> getMap(){
@@ -45,7 +66,7 @@ public class BagOfWords {
 	}
 	
 	private void processWordMap(){
-		for(Tool tool: toolsList){
+		for(Tool tool: toolSet){
 			for(String s : tool.getWordMap().keySet()){
 				Double counter = this.wordMap.get(s);
 				if(counter == null){
@@ -80,7 +101,8 @@ public class BagOfWords {
 	}
 	@Override
 	public int hashCode(){
-		return this.feature.hashCode()+this.getID();
+		int res= this.feature.hashCode()+this.getID();
+		return res;
 	}
 
 	

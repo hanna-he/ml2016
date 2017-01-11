@@ -13,43 +13,61 @@ import org.json.simple.JSONObject;
 import de.uk.spinfo.ml2016.Structures.BagOfWords;
 import de.uk.spinfo.ml2016.Structures.Model;
 import de.uk.spinfo.ml2016.Structures.Tool;
+import de.uk.spinfo.ml2016.Structures.ToolSub;
 
 public class Writer {
 
-	
 	public static void writeB(Model model) {
 		String feature = model.getFeature();
 		try {
-			BufferedWriter bWriter = new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream("resources/json/" + feature + ".json", false), "UTF-8"));
+			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream("resources/json/" + feature + ".json", false), "UTF-8"));
 
 			JSONObject obj1 = new JSONObject();
-			obj1.put("feature", feature);
+			obj1.put("Feature", feature);
 			JSONArray jsClassList = new JSONArray();
+
 			for (BagOfWords bow : model.getBagOfWordList()) {
 				JSONObject obj2 = new JSONObject();
-				
 				JSONArray jsBowList = new JSONArray();
-				for(String bowWord: bow.getWords()){
-//					JSONObject jsBowWord = new JSONObject();
-//					jsBowWord.put(bowWord, bow.getMap().get(bowWord));
+				for (String bowWord : bow.getWords()) {
+					// JSONObject jsBowWord = new JSONObject();
+					// jsBowWord.put(bowWord, bow.getMap().get(bowWord));
 					jsBowList.add(bowWord);
 				}
-				
+
 				obj2.put("Bag_Of_Words", jsBowList);
-				
-				JSONObject jsTool = new JSONObject();
+
+				JSONArray jsTool = new JSONArray();
 				for (Tool tool : bow.getTools()) {
+					JSONObject toolInfo = new JSONObject();
 
 					JSONArray jsWordList = new JSONArray();
 					for (String word : tool.getWordMap().keySet()) {
 						JSONObject jsWord = new JSONObject();
-						jsWord.put(word, tool.getWordMap().get(word));
+						// jsWord.put(word, tool.getWordMap().get(word));
+						// Neu:
+						jsWord.put("Word", word);
+						jsWord.put("Value", tool.getWordMap().get(word));
 						jsWordList.add(jsWord);
 					}
-					jsTool.put(tool.getName(), jsWordList);
+					// damit man es später wieder einlesen kann
+					toolInfo.put("WordMap", jsWordList);
+					toolInfo.put("ParentClass", tool.getToolSub().getID());
+					toolInfo.put("Context", tool.getContext());
+					toolInfo.put("ToolName", tool.getName());
+					jsTool.add(toolInfo);
 				}
 				obj2.put("Tools", jsTool);
+
+				JSONArray toolSubArray = new JSONArray();
+				for (ToolSub toolsub : bow.getToolSubSet()) {
+					JSONObject jsToolSub = new JSONObject();
+					jsToolSub.put("ID", toolsub.getID());
+					jsToolSub.put("Name", toolsub.getName());
+					toolSubArray.add(jsToolSub);
+				}
+				obj2.put("ToolSubs", toolSubArray);
 				obj2.put("ClassId", bow.getID());
 				jsClassList.add(obj2);
 			}
@@ -63,9 +81,8 @@ public class Writer {
 		}
 
 	}
-	
-	
-	//momentan nicht in Gebrauch
+
+	// momentan nicht in Gebrauch
 	public static void writeBagOfWords(Model model) {
 		String feature = model.getFeature();
 		Gson gson = new Gson();
@@ -82,10 +99,7 @@ public class Writer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
 
 	}
-
-	
 
 }
