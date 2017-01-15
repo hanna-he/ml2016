@@ -3,16 +3,16 @@ package de.uk.spinfo.ml2016.Components;
 import java.util.Comparator;
 import java.util.Map;
 
-public class ValueComparator implements Comparator<String> {
+public class ValueComparator<K> implements Comparator<K> {
 
-	Map<String, Double> base;
+	Map<K, Double> base;
 
-	public ValueComparator(Map<String, Double> base) {
+	public ValueComparator(Map<K, Double> base) {
 		this.base = base;
 	}
 
 
-	public int compare(String a, String b) {
+	public int compare(K a, K b) {
 		if (base.get(a) >= base.get(b)) {
 			return -1;
 		} else {

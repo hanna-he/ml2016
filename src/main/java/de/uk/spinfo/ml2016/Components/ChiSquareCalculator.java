@@ -1,5 +1,9 @@
 package de.uk.spinfo.ml2016.Components;
 
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -7,71 +11,66 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import de.uk.spinfo.ml2016.Structures.BagOfWords;
+import de.uk.spinfo.ml2016.Structures.Model;
+
 public class ChiSquareCalculator {
-
-	//ToDo: kann mit neuem Stand der Dinge vereinfacht werden 
+ 
 	
 	
-	public static Map<String, List<String>> computeChiSquare(Map<String, List<String>> boWforAllCategories,
+	public static Map<Integer, List<String>> computeChiSquare(Model model,
 			int keylistlength) {
-		Map<String, List<String>> keyWords = new HashMap<>();
-		// Map<String, Map<String, Double>> chiSquareOfAllCategories = new
-		// HashMap<>();
-
-		Map<String, Map<String, Double>> wordCountsOfAllCategories = countWords(boWforAllCategories);
-		Map<String, Double> overallWordCounts = mergeMaps(wordCountsOfAllCategories);
-
-		for (String category : wordCountsOfAllCategories.keySet()) {
+		Map<Integer, List<String>> keyWords = new HashMap<>();
+		Map<String, Double> overallWordCounts = mergeMaps(model.getBagOfWordList());
+		for(BagOfWords bow: model.getBagOfWordList()){
+			int newkeylistlength = keylistlength;
 			Map<String, Double> chiSquareMap = new HashMap<>();
 			Map<String, Double> sortedChiSquareMap = new LinkedHashMap<>();
-
-			Map<String, Double> wordCountsOfThisCategory = wordCountsOfAllCategories.get(category);
+			Map<String, Double> wordCountsOfThisCategory = bow.getWordMap();
 			for (String word : wordCountsOfThisCategory.keySet()) {
-				Double expectedCount = (wordCountsOfThisCategory.get("totalCount") * overallWordCounts.get(word))
+				Double expectedCount = (bow.getTotalWordCount() * overallWordCounts.get(word))
 						/ overallWordCounts.get("totalCount");
 				Double chiSquare = Math.pow((wordCountsOfThisCategory.get(word) - expectedCount), 2) / expectedCount;
 				chiSquareMap.put(word, chiSquare);
 			}
+			
 			sortedChiSquareMap = sort(chiSquareMap);
-			// chiSquareOfAllCategories.put(category, sortedChiSquareMap);
-
+			
 			List<String> allKeyWordList = new LinkedList(sortedChiSquareMap.keySet());
 			List<String> bestKeyWords = new LinkedList<>();
-			for (int i = 1; i < keylistlength + 1; i++) {
+			if(allKeyWordList .size()<keylistlength){
+				newkeylistlength = allKeyWordList .size();
+			}
+			for (int i = 0; i < newkeylistlength ; i++) {
 				bestKeyWords.add(allKeyWordList.get(i));
 			}
-			keyWords.put(category, bestKeyWords);
+			keyWords.put(bow.getID(), bestKeyWords);
 
 		}
-
+		try {
+			BufferedWriter bWriter = new BufferedWriter(
+					new OutputStreamWriter(new FileOutputStream("resources/"+keylistlength+"_keyWords_"+model.getFeature()+".txt", false), "UTF-8"));
+			for(Integer id : keyWords.keySet()){
+				bWriter.write("Class: "+id+"\n");
+				for(String word : keyWords.get(id)){
+					bWriter.write(word+"\n");
+				}
+			}
+			
+			bWriter.flush();
+			bWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return keyWords;
 	}
 
-	private static Map<String, Map<String, Double>> countWords(Map<String, List<String>> boWforAllCategories) {
-		Map<String, Map<String, Double>> wordCountsOfAllCategories = new HashMap<>();
-		for (String category : boWforAllCategories.keySet()) {
-			double totalWordsInThisCategory = 0;
-			List<String> wordsOfCategory = boWforAllCategories.get(category);
-			Map<String, Double> wordCountsOfThisCategory = new HashMap<>();
-			for (String word : wordsOfCategory) {
-				Double count = wordCountsOfThisCategory.get(word);
-				if (count == null) {
-					count = 0.;
-				}
-				wordCountsOfThisCategory.put(word, count++);
-				totalWordsInThisCategory++;
-			}
-			wordCountsOfThisCategory.put("totalCount", totalWordsInThisCategory);
-			wordCountsOfAllCategories.put(category, wordCountsOfThisCategory);
-		}
-		return wordCountsOfAllCategories;
-	}
 
-	private static Map<String, Double> mergeMaps(Map<String, Map<String, Double>> wordCountsOfAllCategories) {
+	private static Map<String, Double> mergeMaps(List<BagOfWords> bowList) {
 		Map<String, Double> overallWordCounts = new HashMap<>();
-
-		for (String category : wordCountsOfAllCategories.keySet()) {
-			Map<String, Double> wordCountsOfThisCategory = wordCountsOfAllCategories.get(category);
+		double overallTotalWordCount = 0.;
+		for (BagOfWords bow: bowList) {
+			Map<String, Double> wordCountsOfThisCategory = bow.getWordMap();
 
 			for (String word : wordCountsOfThisCategory.keySet()) {
 				Double count = overallWordCounts.get(word);
@@ -80,18 +79,20 @@ public class ChiSquareCalculator {
 				}
 				overallWordCounts.put(word, count + wordCountsOfThisCategory.get(word));
 			}
+			overallTotalWordCount+= bow.getTotalWordCount();
 		}
+		overallWordCounts.put("totalCount", overallTotalWordCount);
 		return overallWordCounts;
 	}
 
-	private static LinkedHashMap<String, Double> sort(Map<String, Double> map) {
+	public static <K> LinkedHashMap<K, Double> sort(Map<K, Double> map) {
 
 		ValueComparator bvc = new ValueComparator(map);
-		TreeMap<String, Double> tempSortedMap = new TreeMap<String, Double>(bvc);
-		LinkedHashMap<String, Double> sortedMap = new LinkedHashMap<>();
+		TreeMap<K, Double> tempSortedMap = new TreeMap<K, Double>(bvc);
+		LinkedHashMap<K, Double> sortedMap = new LinkedHashMap<>();
 		tempSortedMap.putAll(map);
 
-		for (String key : tempSortedMap.keySet()) {
+		for (K key : tempSortedMap.keySet()) {
 			Double value = map.get(key);
 			sortedMap.put(key, value);
 

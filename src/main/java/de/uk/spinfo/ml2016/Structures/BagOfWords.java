@@ -13,6 +13,7 @@ public class BagOfWords {
 	private Map<String, Double> wordMap;
 	private Set<Tool> toolSet;
 	private Set<ToolSub> toolSubSet;
+	private double totalCount =0;
 
 	
 	public BagOfWords(String feature, int id){
@@ -22,7 +23,15 @@ public class BagOfWords {
 		this.toolSet = new HashSet<>();
 		this.toolSubSet = new HashSet<>();
 	}
-	
+	public void setTotalWordCount(int count){
+		this.totalCount = count;
+	}
+	public double getTotalWordCount(){
+		if(this.totalCount==0.){
+			processWordMap();
+		}
+		return this.totalCount;
+	}
 	public String getFeature(){
 		return this.feature;
 	}
@@ -58,7 +67,7 @@ public class BagOfWords {
 		return result;
 	}
 	
-	public Map<String, Double> getMap(){
+	public Map<String, Double> getWordMap(){
 		if(this.wordMap.isEmpty()){
 			processWordMap();
 		}
@@ -67,6 +76,7 @@ public class BagOfWords {
 	
 	private void processWordMap(){
 		for(Tool tool: toolSet){
+			this.totalCount+= tool.getWordCount();
 			for(String s : tool.getWordMap().keySet()){
 				Double counter = this.wordMap.get(s);
 				if(counter == null){

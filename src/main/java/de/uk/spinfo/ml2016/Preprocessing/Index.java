@@ -15,28 +15,30 @@ public class Index {
 
 	public static void makeIndexFile() {
 		File f = new File("resources/extractedWiki");
-
+		int counter = 0;
 		for (File folder : f.listFiles()) {
 			for (String datafile : folder.list()) {
-				makeIndex(datafile, folder);
+				counter += makeIndex(datafile, folder);
 			}
 		}
+		System.out.println(counter);
 	}
 
-	private static void makeIndex(String datafile, File folder) {
+	private static int makeIndex(String datafile, File folder) {
 		List<String> context = new ArrayList<>();
-		boolean contextFound = false;
+		int counter =0;
 		String direction = "resources/sortedWiki/";
 		String title = "";
 		try (BufferedWriter fWriter = new BufferedWriter(
-				new OutputStreamWriter(new FileOutputStream(direction + "index.txt", true), "UTF-8"))) {
+				new OutputStreamWriter(new FileOutputStream(direction + "indexSehrKurz.txt", true), "UTF-8"))) {
 			try (BufferedReader bReader = new BufferedReader(
 					new InputStreamReader(new FileInputStream(folder.toString() + "/" + datafile), "UTF8"))) {
 				while (bReader.ready()) {
 					String line = bReader.readLine();
 					if (line.startsWith("<doc id")) {
+						counter++;
 						title = line.split("title=")[1].toLowerCase().replace("\"", "").replace(">", "");
-						System.out.println(title);
+//						System.out.println(title);
 						fWriter.write(title + "\t" + folder.toString() + "/" + datafile+"\n");
 					}
 					
@@ -49,6 +51,7 @@ public class Index {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
+		return counter;
 	}
 	public static void main(String[] args){
 		

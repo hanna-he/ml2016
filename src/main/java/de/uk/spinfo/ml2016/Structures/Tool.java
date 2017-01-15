@@ -6,7 +6,7 @@ import java.util.Set;
 
 public class Tool {
 
-	private ToolSub ts;
+	private ToolSub toolsub;
 	private String name;
 	private List<String> context;
 	private Map<String, Double> wordMap;
@@ -17,13 +17,13 @@ public class Tool {
 	
 	
 	public Tool(String name, List<String> context, ToolSub tsc) {
-		this.ts = tsc;
+		this.toolsub = tsc;
 		this.name = name;
 		this.context = context;
 	}
 	
 	public ToolSub getToolSub(){
-		return this.ts;
+		return this.toolsub;
 	}
 	public String getName(){
 		return this.name;
@@ -92,7 +92,7 @@ public class Tool {
 	}
 	@Override
 	public String toString(){
-		StringBuilder result = new StringBuilder(this.name+": "+this.ts.getID()+"\n"+"Bag of Words: ");
+		StringBuilder result = new StringBuilder(this.name+": "+this.toolsub.getID()+"\n"+"Bag of Words: ");
 		for(String str : this.wordMap.keySet()){
 			result.append(str+" : "+this.wordMap.get(str)+",\n");
 		}

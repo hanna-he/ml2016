@@ -25,48 +25,78 @@ public class Lemmas extends Feature {
 	public Map<String, Double> processWords(List<String> text) {
 		Double toolWordCount = 0.;
 		Map<String, Double> wordMap = new HashMap<>();
+		try {
+			List<String> tokens = tokenizeWords(text);
+			if (!tokens.isEmpty()) {
+				if ((tokens.size() == 1) && (tokens.get(0).isEmpty())) {
 
-		
-		if (!text.isEmpty()) {
-			SentenceData09 sentence = new SentenceData09();
-			List<String> sentenceAsList = new ArrayList<>();
-			// System.out.println("in if schleife");
-			try {
-				List<String> tokens = tokenizeWords(text);
-				tokens.add(0, "<root>");
-				sentence.init(tokens.toArray(new String[0]));
-				sentence = lemmatizer.apply(sentence);
+				} else {
+					SentenceData09 sentence = new SentenceData09();
+					List<String> sentenceAsList = new ArrayList<>();
+					tokens.add(0, "<root>");
+					sentence.init(tokens.toArray(new String[0]));
+					sentence = lemmatizer.apply(sentence);
 
-			} catch (Exception e1) {
-				e1.printStackTrace();
+					sentenceAsList = Arrays.asList(Arrays.copyOfRange(sentence.plemmas, 1, sentence.plemmas.length))
+							.stream().filter(e -> !e.equals("--")).collect(Collectors.toList());
+
+					for (String word : sentenceAsList) {
+						addWord(word, wordMap);
+						// System.out.println(word);
+						toolWordCount++;
+					}
+				}
 			}
-			sentenceAsList = Arrays.asList(Arrays.copyOfRange(sentence.plemmas, 1, sentence.plemmas.length)).stream()
-					.filter(e -> !e.equals("--")).collect(Collectors.toList());
+		} catch (Exception e1) {
+			e1.printStackTrace();
 
-			for (String word : sentenceAsList) {
-				addWord(word, wordMap);
-				// System.out.println(word);
-				toolWordCount++;
-			}
 		}
 		wordMap.put("totalWordCount", toolWordCount);
 
 		return wordMap;
 	}
 
-	public static void main(String[] args) {
-		Lemmas lem = new Lemmas();
-		List<String> test = new ArrayList<>();
-		List<String> test2 = new ArrayList<>();
-		test.add("KLammern klammern");
-		// test.add("Noch einige Zeilen mehr");
-		for (String s : lem.processWords(test2).keySet()) {
-			System.out.println(s + " " + lem.processWords(test).get(s));
+	public static void main(String[] args) throws Exception {
+		Lemmas lemma = new Lemmas();
+		String a = "m/w";
+		System.out.println(a.split("/")[0].length());
+		System.out.println(a.split("/")[1].length());
+
+		List<String> bla = new ArrayList<>();
+		// wieso fliegt bei dem Lemmatizer "w" raus?
+		bla.add("m/w");
+		List<String> tokens = lemma.tokenizeWords(bla);
+		for (String str : tokens) {
+			System.out.println("String : " + str);
 		}
-		Set<String> bla = lem.processWords(test).keySet();
-		for (String s : bla) {
-			System.out.println(s);
+
+		System.out.println("bla : " + lemma.processWords(bla));
+
+		List<String> text = new ArrayList<>();
+		// String g = "a";
+		// text.add(g);
+		text.add("");
+		if (!text.isEmpty()) {
+			if ((text.size() == 1) && (text.get(0).isEmpty())) {
+
+			} else {
+				System.out.println("sowieso");
+			}
 		}
+		// System.out.println("sowieso");
+		text.add("hier-da");
+		text.add("m-w");
+		text.add("m/w");
+		text.add("steht/w");
+		text.add("(hund)");
+		text.add("tiere(Katzen)");
+		text.add("Lehrer-Schüler/innen");
+		text.add("diagnose-software/bus-system");
+		List<String> tokens2 = lemma.tokenizeWords(text);
+		for (String str : tokens2) {
+			System.out.println(str);
+		}
+		System.out.println("text : " + lemma.processWords(text));
 	}
 
 }

@@ -62,7 +62,9 @@ public class TsvParser {
 					String toolSubId = lineSplit[2].replace(")", "").replace("(", "");
 
 					String toolSubName = lineSplit[3];
-					context.add(lineSplit[11]);
+					if(!lineSplit[11].equalsIgnoreCase("na")){
+						context.add(lineSplit[11]);
+					}
 
 					ToolPart tp = new ToolPart(toolNumber);
 
@@ -99,13 +101,5 @@ public class TsvParser {
 		System.out.println(toolcount);
 	}
 
-	public List<String> enrichContext() {
-		List<String> context = new ArrayList<>();
-
-		return context;
-	}
-
-	public static void main(String[] args) {
-
-	}
+	
 }

@@ -1,9 +1,16 @@
 package de.uk.spinfo.ml2016.Components;
 
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import de.uk.spinfo.ml2016.Structures.Tool;
 
 public abstract class Feature {
@@ -39,8 +46,32 @@ public abstract class Feature {
 	}
 
 
-	public void filterStopwords(){
-		
+	public void filterStopwords(Map<String, Double> wordMap){
+		Map<String, Double> result = new HashMap<>();
+		double minusWordCount=0.;
+		List<String> stopwords = new ArrayList<>();
+		try (BufferedReader bReader = new BufferedReader(new InputStreamReader(new FileInputStream("resources/stopwords.txt"), "UTF8"))) {
+
+			while (bReader.ready()) {
+				String line = bReader.readLine();
+				line = line.trim();
+				stopwords.add(line);
+			}
+		}catch(IOException ioe){
+			ioe.printStackTrace();
+		}
+		Set<String> featuredStopwords = processWords(stopwords).keySet();
+		for(String word : wordMap.keySet()){
+			if(featuredStopwords.contains(word)){
+				minusWordCount+=wordMap.get(word);
+				
+			}else{
+				result.put(word, wordMap.get(word));
+			}
+		}
+		double oldWordCount = wordMap.get("totalWordCount");
+		double newWordCount = oldWordCount- minusWordCount;
+		result.put("totalWordCount", newWordCount);
 	}
 
 	

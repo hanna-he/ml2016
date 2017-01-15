@@ -53,6 +53,7 @@ public class JsonReader {
 					JSONObject toolInfo = (JSONObject) jsTool.get(m);
 					String name = (String) toolInfo.get("ToolName");
 					String id = (String) toolInfo.get("ParentClass");
+					Double totalToolCount = (Double) toolInfo.get("TotalToolCount");
 					List<String> contextList = new ArrayList<>();
 					JSONArray contextArray = (JSONArray) toolInfo.get("Context");
 					for(int o =0; o<contextArray.size(); o++){
@@ -60,6 +61,7 @@ public class JsonReader {
 						contextList.add(context);
 					}
 					Tool tool = new Tool(name, contextList, bow.getToolSubWithId(id));
+					tool.setWordCount(totalToolCount);
 					JSONArray jsWordList = (JSONArray) toolInfo.get("WordMap");
 					Map<String, Double> wordMap = new HashMap<>();
 					for (int n = 0; n < jsWordList.size(); n++) {

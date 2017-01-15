@@ -21,7 +21,7 @@ public class Writer {
 		String feature = model.getFeature();
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("resources/json/" + feature + ".json", false), "UTF-8"));
+					new FileOutputStream("resources/json/" + feature + "KURZ.json", false), "UTF-8"));
 
 			JSONObject obj1 = new JSONObject();
 			obj1.put("Feature", feature);
@@ -31,8 +31,6 @@ public class Writer {
 				JSONObject obj2 = new JSONObject();
 				JSONArray jsBowList = new JSONArray();
 				for (String bowWord : bow.getWords()) {
-					// JSONObject jsBowWord = new JSONObject();
-					// jsBowWord.put(bowWord, bow.getMap().get(bowWord));
 					jsBowList.add(bowWord);
 				}
 
@@ -56,6 +54,7 @@ public class Writer {
 					toolInfo.put("ParentClass", tool.getToolSub().getID());
 					toolInfo.put("Context", tool.getContext());
 					toolInfo.put("ToolName", tool.getName());
+					toolInfo.put("TotalToolCount", tool.getWordCount());
 					jsTool.add(toolInfo);
 				}
 				obj2.put("Tools", jsTool);
@@ -73,12 +72,23 @@ public class Writer {
 			}
 			obj1.put("Classes", jsClassList);
 			bWriter.write(obj1.toJSONString());
-			System.out.println(obj1.toJSONString());
+//			System.out.println(obj1.toJSONString());
 			bWriter.flush();
 			bWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+//		for(BagOfWords bow: model.getBagOfWordList()){
+//			System.out.println(bow.getFeature()+"\n");
+//			System.out.println(bow.getID()+"\n");
+//			for(Tool tool: bow.getTools()){
+//				System.out.println(tool.toString()+"\n");
+//			}
+//			for(ToolSub ts : bow.getToolSubSet()){
+//				System.out.println(ts.getID()+" "+ts.getName()+"\n");
+//			}
+//		}
 
 	}
 
@@ -90,7 +100,7 @@ public class Writer {
 			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream("resources/json/" + feature + ".json", false), "UTF-8"));
 			for (BagOfWords bow : model.getBagOfWordList()) {
-				bWriter.write(gson.toJson(bow.getMap()));
+				bWriter.write(gson.toJson(bow.getWordMap()));
 			}
 			// bWriter.write(gson.toJson(model));
 

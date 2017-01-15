@@ -2,7 +2,9 @@ package de.uk.spinfo.ml2016.Components;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import opennlp.tools.sentdetect.SentenceDetectorME;
@@ -24,37 +26,56 @@ public class Tokenizer {
 		List<String> result = new ArrayList<String>();
 		// Klammern hinzugefügt
 		Pattern punctuation = Pattern.compile("[,.;:!?&\\)(]");
+		// Pattern punctuation = Pattern.compile("\\p{Punct}");
 
 		for (String sentence : sentencer.sentDetect(string)) {
 			for (String token : tokenizer.tokenize(sentence)) {
-//				token = token.toLowerCase();
+				 token = token.toLowerCase();
 				// strip punctuation
 				if (!punctuation.matcher(token).find()) {
+
+					Set<String> zwischenresult = new HashSet<>();
+					zwischenresult.add(token);
 					if (token.contains("/") && !token.equals("/") && !token.equals("//")) {
-						String[] split = token.split("/");
-						int len = split.length;
-						// gibt zb start/amadeus/merlin
-						for (int i = 0; i < len; i++) {
-							// zb bei Lehrer/in "in" kein eigenständiges Token
-							if (!split[i].startsWith("in") && i != 0) {
-								result.add(split[i]);
+						Set<String> tmpresult = new HashSet<>();
+						for (String tok : zwischenresult) {
+							String[] split = tok.split("/");
+							int len = split.length;
+							// gibt zb start/amadeus/merlin
+							for (int i = 0; i < len; i++) {
+								// zb bei Lehrer/in "in" kein eigenständiges
+								// Token
+								if (!split[i].startsWith("in") && (split[i].length() > 1)) {
+									tmpresult.add(split[i]);
+								}
 							}
 						}
-						token = split[0];
+						zwischenresult.clear();
+						zwischenresult = tmpresult;
 					}
-					if (token.contains("-")&&!token.equals("-")) {
-						String[] split = token.split("-");
-						int len = split.length;
-						for (int i = 1; i < len; i++) {
-							result.add(split[i]);
+					if (token.contains("-") && !token.equals("-")) {
+						Set<String> tmpresult2 = new HashSet<>();
+						for (String tok : zwischenresult) {
+							String[] split = tok.split("-");
+							int len = split.length;
+							for (int i = 0; i < len; i++) {
+								if (split[i].length() > 1) {
+									tmpresult2.add(split[i]);
+								}
+							}
 						}
-						token = split[0];
+						zwischenresult.clear();
+						zwischenresult = tmpresult2;
 					}
 
-				}
-				// um m/w rauszuschmeißen
-				if (token.length() > 1) {
-					result.add(token);
+					
+				
+					for (String tok : zwischenresult) {
+						if (!tok.isEmpty()) {
+							result.add(tok);
+						}
+					}
+
 				}
 			}
 		}
@@ -62,9 +83,10 @@ public class Tokenizer {
 		return result;
 
 	}
-	public static void main(String[] args) throws Exception{
+
+	public static void main(String[] args) throws Exception {
 		Tokenizer tok = new Tokenizer();
-		System.out.println(tok.tokenize("Start/Amadeus/merlin"));
+		System.out.println(tok.tokenize(""));
 	}
 
 }

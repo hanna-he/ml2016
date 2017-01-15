@@ -23,34 +23,43 @@ public class ModelMaker {
 	private int totalToolCount=0;
 	
 	public Model makeModel(String feature, Set<ToolPart> toolPartList) {
-		// for(ToolPart tp: toolPartList){
-		// System.out.println(tp.getID());
-		// }
 		Model model = createModel(feature, toolPartList);
 		Writer.writeB(model);
 		return model;
 	}
 
-	private Model createModel(String featureString, Set<ToolPart> toolPartList) {
-		Cooccurrence cooccurrence = new Cooccurrence(toolPartList);
+	
+	private void preprocessing(Set<ToolPart> toolPartSet, ContextSearcher contextsearcher){
+		Set<Tool> allTools = new HashSet<>();
+		for(ToolPart tp : toolPartSet){
+			allTools.addAll(tp.getTools());
+		}
+		contextsearcher.getPathToTitleMap(allTools);
+	}
+	private Model createModel(String featureString, Set<ToolPart> toolPartSet) {
+		Cooccurrence cooccurrence = new Cooccurrence(toolPartSet);
 		Model model = new Model(featureString);
 		FeatureFactory featureFactory = new FeatureFactory();
 		Feature feature = featureFactory.createFeature(featureString);
 		ContextSearcher contextsearcher = new ContextSearcher(feature);
+		preprocessing(toolPartSet, contextsearcher);
 		Set<Tool> toolsWoutContext = new HashSet<>();
-		for (ToolPart toolPart : toolPartList) {
+		for (ToolPart toolPart : toolPartSet) {
 			System.out.println(toolPart.getID());
 			BagOfWords bow = new BagOfWords(featureString, toolPart.getID());
+			int totalWordCountBoW = 0;
 			for (Tool tool : toolPart.getTools()) {
+				System.out.println(tool.getName());
 				this.totalToolCount++;
 				if(contextsearcher.getContext(tool)){
 					this.contextFound++;
-				};
+				}
 				Map<String, Double> wordMap = feature.processWords(tool.getContext());
-				Double totalWordCount = wordMap.get("totalWordCount");
+				Double totalWordCountTool = wordMap.get("totalWordCount");
+				totalWordCountBoW+= totalWordCountTool;
 				wordMap.remove("totalWordCount");
 				tool.setWordMap(wordMap);
-				tool.setWordCount(totalWordCount);
+				tool.setWordCount(totalWordCountTool);
 				cooccurrence.countCooccurrence(tool);
 				bow.addToolSub(tool.getToolSub());
 				if (tool.getContext().isEmpty()) {
@@ -59,17 +68,19 @@ public class ModelMaker {
 					bow.addTool(tool);
 				}
 			}
+			bow.setTotalWordCount(totalWordCountBoW);
 			model.addBoW(bow);
+			
 		}
 
 		// Kontext von referenzierenden Tools hinzufügen
 		this.contextFoundInOtherTool = cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
-	
+		
 		
 		System.out.println("Insgesamt gibt es "+this.totalToolCount+" Tools \n");
 		System.out.println("Für "+this.contextFound+" Tools wurden Wikikontexte gefunden \n");
 		System.out.println("Für "+this.contextFoundInOtherTool+" Tools wurde der Kontext von referenzierenden Tools verwendet \n");
-		System.out.println("Für "+(this.totalToolCount-this.contextFoundInOtherTool)+" Tools wurden gar keine Kontexte gefunden \n");
+		System.out.println("Für "+(toolsWoutContext.size()-this.contextFoundInOtherTool)+" Tools wurden gar keine Kontexte gefunden \n");
 		return model;
 	}
 

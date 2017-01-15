@@ -11,7 +11,7 @@ public class ToolSub {
 
 	private String name;
 
-	private ToolPart tp;
+	private ToolPart toolpart;
 	
 	private Set<Tool> toolsList;
 	
@@ -19,21 +19,21 @@ public class ToolSub {
 	public ToolSub(String id, String name, ToolPart tp) {
 		this.id = id;
 		this.name = name;
-		this.tp = tp;
+		this.toolpart = tp;
 		this.toolsList = new HashSet<>();
 	}
 	//im Prinzip würde ja dieser reichen:
 	public ToolSub(String id, String name) {
 		this.id = id;
 		this.name = name;
-		this.tp = new ToolPart(Character.getNumericValue(id.charAt(0)));
+		this.toolpart = new ToolPart(Character.getNumericValue(id.charAt(0)));
 		this.toolsList = new HashSet<>();
 	}
 	public String getName(){
 		return this.name;
 	}
 	public ToolPart getToolPart(){
-		return this.tp;
+		return this.toolpart;
 	}
 	
 	public Set<Tool> getToolList(){
