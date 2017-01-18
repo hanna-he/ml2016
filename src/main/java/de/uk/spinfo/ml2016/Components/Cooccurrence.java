@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -30,6 +31,7 @@ public class Cooccurrence {
 			this.toolSet.addAll(toolpart.getTools());
 
 		}
+		System.out.println("Cooccurrence Konstruktor");
 	}
 
 	public void countCooccurrence(Tool tool) {
@@ -48,32 +50,35 @@ public class Cooccurrence {
 	public void getReferencingTools(Tool tool) {
 //		Set<Tool> referencingTools = new HashSet<>();
 		Map<Tool, Double> referencingToolsWithNumber = new HashMap<>();
-		Map<Tool, Double> sortedReferencingToolsWithNumber = new LinkedHashMap<>();
+		Map<Tool, Double> sortedReferencingToolsWithNumber = new HashMap<>();
 		for (Tool otherTool : this.toolSet) {
 			if (otherTool != tool) {
 				for (String word : tool.getFeaturedName()) {
 					if (otherTool.getWordMap().containsKey(word)) {
-						System.out.println("reftool gefunden für : "+tool.getName());
 //						referencingTools.add(otherTool);
 						referencingToolsWithNumber.put(otherTool, otherTool.getWordMap().get(word));
 					}
 				}
 			}
 		}
+		System.out.println("refToolswithnumber.size : "+ referencingToolsWithNumber.size());
 		
 		
 		sortedReferencingToolsWithNumber = ChiSquareCalculator.sort(referencingToolsWithNumber);
-		List<Tool> allReferencesList = new LinkedList<Tool>(sortedReferencingToolsWithNumber.keySet());
-		Set<Tool> bestReferences = new HashSet<>();
+		System.out.println("SortedrefToolswithnumber.size : "+ sortedReferencingToolsWithNumber.size());
+		List<Tool> allReferencesList = new ArrayList<Tool>(sortedReferencingToolsWithNumber.keySet());
+	
 		int len = 0;
-		if(bestReferences.size()<this.referenceListLength){
-			len = bestReferences.size();
+		if(allReferencesList.size()<this.referenceListLength){
+			len = allReferencesList.size();
 		}else{
 			len = this.referenceListLength;
 		}
+		Set<Tool> bestReferences = new HashSet<>(len);
 		for (int i = 0; i < len ; i++) {
 			bestReferences.add(allReferencesList.get(i));
 		}
+		
 //		tool.setReferencingTools(referencingTools);
 		tool.setReferencingTools(bestReferences);
 		
@@ -83,7 +88,7 @@ public class Cooccurrence {
 		int contextFound = 0;
 		try {
 			BufferedWriter bWriter = new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream("resources/ToolsWithoutContext.txt", false), "UTF-8"));
+					new OutputStreamWriter(new FileOutputStream("resources/ToolsWithoutContext_"+model.getFeature()+"_3844.txt", false), "UTF-8"));
 			for (Tool toolagain : toolsWoutContext) {
 				getReferencingTools(toolagain);
 				if (!toolagain.getReferencingTools().isEmpty()) {

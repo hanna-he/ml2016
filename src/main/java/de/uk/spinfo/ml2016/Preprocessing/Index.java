@@ -25,12 +25,11 @@ public class Index {
 	}
 
 	private static int makeIndex(String datafile, File folder) {
-		List<String> context = new ArrayList<>();
 		int counter =0;
 		String direction = "resources/sortedWiki/";
 		String title = "";
 		try (BufferedWriter fWriter = new BufferedWriter(
-				new OutputStreamWriter(new FileOutputStream(direction + "indexSehrKurz.txt", true), "UTF-8"))) {
+				new OutputStreamWriter(new FileOutputStream(direction + "INDEX.txt", true), "UTF-8"))) {
 			try (BufferedReader bReader = new BufferedReader(
 					new InputStreamReader(new FileInputStream(folder.toString() + "/" + datafile), "UTF8"))) {
 				while (bReader.ready()) {

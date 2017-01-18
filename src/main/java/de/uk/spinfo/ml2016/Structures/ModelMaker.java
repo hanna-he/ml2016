@@ -35,6 +35,7 @@ public class ModelMaker {
 			allTools.addAll(tp.getTools());
 		}
 		contextsearcher.getPathToTitleMap(allTools);
+		System.out.println("preprocessing");
 	}
 	private Model createModel(String featureString, Set<ToolPart> toolPartSet) {
 		Cooccurrence cooccurrence = new Cooccurrence(toolPartSet);
@@ -75,7 +76,16 @@ public class ModelMaker {
 
 		// Kontext von referenzierenden Tools hinzufügen
 		this.contextFoundInOtherTool = cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
-		
+		int counter = 0;
+		for(BagOfWords b: model.getBagOfWordList()){
+			for(Tool t : b.getTools()){
+				if(t.getContext().isEmpty()){
+					counter++;
+					System.out.println("Überhaupt keinen Kontext : "+t.getName()+" "+t.getFeaturedName());
+				}
+			}
+		}
+		System.out.println(counter);
 		
 		System.out.println("Insgesamt gibt es "+this.totalToolCount+" Tools \n");
 		System.out.println("Für "+this.contextFound+" Tools wurden Wikikontexte gefunden \n");

@@ -46,7 +46,7 @@ public abstract class Feature {
 	}
 
 
-	public void filterStopwords(Map<String, Double> wordMap){
+	public Map<String, Double> filterStopwords(Map<String, Double> wordMap){
 		Map<String, Double> result = new HashMap<>();
 		double minusWordCount=0.;
 		List<String> stopwords = new ArrayList<>();
@@ -72,6 +72,7 @@ public abstract class Feature {
 		double oldWordCount = wordMap.get("totalWordCount");
 		double newWordCount = oldWordCount- minusWordCount;
 		result.put("totalWordCount", newWordCount);
+		return result;
 	}
 
 	

@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -20,7 +21,7 @@ public class ChiSquareCalculator {
 	
 	public static Map<Integer, List<String>> computeChiSquare(Model model,
 			int keylistlength) {
-		Map<Integer, List<String>> keyWords = new HashMap<>();
+		Map<Integer, List<String>> keyWords = new HashMap<>(model.getBagOfWordList().size());
 		Map<String, Double> overallWordCounts = mergeMaps(model.getBagOfWordList());
 		for(BagOfWords bow: model.getBagOfWordList()){
 			int newkeylistlength = keylistlength;
@@ -36,11 +37,12 @@ public class ChiSquareCalculator {
 			
 			sortedChiSquareMap = sort(chiSquareMap);
 			
-			List<String> allKeyWordList = new LinkedList(sortedChiSquareMap.keySet());
-			List<String> bestKeyWords = new LinkedList<>();
+			List<String> allKeyWordList = new ArrayList(sortedChiSquareMap.keySet());
+		
 			if(allKeyWordList .size()<keylistlength){
 				newkeylistlength = allKeyWordList .size();
 			}
+			List<String> bestKeyWords = new ArrayList<>(newkeylistlength);
 			for (int i = 0; i < newkeylistlength ; i++) {
 				bestKeyWords.add(allKeyWordList.get(i));
 			}
@@ -85,11 +87,12 @@ public class ChiSquareCalculator {
 		return overallWordCounts;
 	}
 
-	public static <K> LinkedHashMap<K, Double> sort(Map<K, Double> map) {
+	public static <K> Map<K, Double> sort(Map<K, Double> map) {
 
 		ValueComparator bvc = new ValueComparator(map);
 		TreeMap<K, Double> tempSortedMap = new TreeMap<K, Double>(bvc);
-		LinkedHashMap<K, Double> sortedMap = new LinkedHashMap<>();
+		//muss LinkedHashMap bleiben sonst funktioniert Sortierung nicht mehr
+		Map<K, Double> sortedMap = new LinkedHashMap<>(map.size());
 		tempSortedMap.putAll(map);
 
 		for (K key : tempSortedMap.keySet()) {
@@ -98,6 +101,25 @@ public class ChiSquareCalculator {
 
 		}
 		return sortedMap;
+	}
+	
+	public static void main(String args){
+		Map<String, Double> la = new HashMap<>();
+		la.put("hundert", 100.0);
+		la.put("drei", 3.0);
+		la.put("null,4", 0.4);
+		la.put("fünfzig", 50.0);
+		Map<String, Double> sortedChiSquareMap = new LinkedHashMap<>();
+		sortedChiSquareMap = sort(la);
+		List<String> allKeyWordList = new LinkedList(sortedChiSquareMap.keySet());
+		List<String> bestKeyWords = new LinkedList<>();
+		
+		for (int i = 0; i < 3 ; i++) {
+			bestKeyWords.add(allKeyWordList.get(i));
+		}
+		for(String s : bestKeyWords){
+			System.out.println(s);
+		}
 	}
 
 }

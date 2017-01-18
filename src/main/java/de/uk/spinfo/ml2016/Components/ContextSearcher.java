@@ -29,7 +29,7 @@ public class ContextSearcher {
 
 
 	private Map<Tool, List<String>> getFeaturedNamesMap(Set<Tool> toolsList) {
-		Map<Tool, List<String>> nameMap = new HashMap<>();
+		Map<Tool, List<String>> nameMap = new HashMap<>(toolsList.size());
 		for (Tool tool : toolsList) {
 			List<String> toolnames = new ArrayList<>();
 			toolnames.add(tool.getName());
@@ -39,24 +39,45 @@ public class ContextSearcher {
 			toolnames.addAll(featuredToolname);
 			nameMap.put(tool, toolnames);
 		}
+		
+		System.out.println("ContextSearcher getFeauturedNamesMap");
 		return nameMap;
+	}
+	
+	private static List<String> readFile(){
+		List<String> index = new ArrayList<>();
+		try (BufferedReader bReader = new BufferedReader(
+				new InputStreamReader(new FileInputStream("resources/sortedWiki/index.txt"), "UTF8"))) {
+			while (bReader.ready()) {
+				String line = bReader.readLine();
+				index.add(line);
+			}
+			} catch (IOException ioe) {
+				ioe.printStackTrace();
+			}
+		System.out.println("Index eingelesen");
+		return index;
 	}
 
 	public Map<Tool, Set<String>> getPathToTitleMap(Set<Tool> toolsList) {
 		Map<Tool, List<String>> nameMap = getFeaturedNamesMap(toolsList);
 		
 		this.possibleTitles = new HashMap<>();
-		try (BufferedReader bReader = new BufferedReader(
-				new InputStreamReader(new FileInputStream("resources/sortedWiki/indexSehrKurz.txt"), "UTF8"))) {
-			while (bReader.ready()) {
-				String line = bReader.readLine();
+		List<String> index = readFile();
+		int ind =0;
+		for(String line: index){
+			System.out.println("index zeile "+ind++);
 				String title = line.split("\t")[0];
 				List<String> titleList = new ArrayList<>();
 				titleList.add(title);
-				Set<String> tmpfeaturedWords = this.feature.processWords(titleList).keySet();
-				tmpfeaturedWords.remove("totalWordCount");
-				titleList.addAll(tmpfeaturedWords);
+				titleList.addAll(this.feature.processWords(titleList).keySet());
+				titleList.remove("totalWordCount");
+//				tmpfeaturedWords.remove("totalWordCount");
+//				titleList.addAll(tmpfeaturedWords);
+//				//sinnvoll?
+//				tmpfeaturedWords = null;
 				for (Tool tool : nameMap.keySet()) {
+					
 					Set<String> titles = this.possibleTitles.get(tool);
 					if (titles == null) {
 						titles = new HashSet<>();
@@ -74,10 +95,8 @@ public class ContextSearcher {
 				}
 
 			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
 		
+		System.out.println("ContextSearcher schreiben in 'gefundene Kontexte' fängt an");
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
 					new FileOutputStream("resources/gefundeneKontexte.txt", false), "UTF-8"));

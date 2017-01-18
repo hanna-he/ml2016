@@ -21,7 +21,7 @@ public class Writer {
 		String feature = model.getFeature();
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("resources/json/" + feature + "KURZ.json", false), "UTF-8"));
+					new FileOutputStream("resources/json/" + feature + ".json", false), "UTF-8"));
 
 			JSONObject obj1 = new JSONObject();
 			obj1.put("Feature", feature);
@@ -72,26 +72,20 @@ public class Writer {
 			}
 			obj1.put("Classes", jsClassList);
 			bWriter.write(obj1.toJSONString());
-//			System.out.println(obj1.toJSONString());
 			bWriter.flush();
 			bWriter.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-//		for(BagOfWords bow: model.getBagOfWordList()){
-//			System.out.println(bow.getFeature()+"\n");
-//			System.out.println(bow.getID()+"\n");
-//			for(Tool tool: bow.getTools()){
-//				System.out.println(tool.toString()+"\n");
-//			}
-//			for(ToolSub ts : bow.getToolSubSet()){
-//				System.out.println(ts.getID()+" "+ts.getName()+"\n");
-//			}
-//		}
 
 	}
 
+	
+	
+	
+	
+	
+	
 	// momentan nicht in Gebrauch
 	public static void writeBagOfWords(Model model) {
 		String feature = model.getFeature();
