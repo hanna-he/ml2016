@@ -26,10 +26,17 @@ public class Model {
 
 	public void addToolToBagOfWordsWithID(Tool tool) {
 		int toolID = tool.getToolSub().getToolPart().getID();
-		for (BagOfWords bow : this.bowList) {
-			if (bow.getID() == toolID) {
-				bow.addTool(tool);
+		boolean found = false;
+		for (BagOfWords bowTmp : this.bowList) {
+			if (bowTmp.getID() == toolID) {
+				found = true;
+				bowTmp.addTool(tool);
 			}
+		}
+		if(found == false){
+			BagOfWords bow = new BagOfWords(toolID);
+			bow.addTool(tool);
+			this.bowList.add(bow);
 		}
 		//evtl noch neues BOW anlegen, falls es es noch nicht gibt
 	}

@@ -1,6 +1,10 @@
 package de.uk.spinfo.ml2016.io;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -18,9 +22,9 @@ import de.uk.spinfo.ml2016.Structures.Model;
 import de.uk.spinfo.ml2016.Structures.Tool;
 import de.uk.spinfo.ml2016.Structures.ToolSub;
 
-public class JsonReader {
+public class Reader {
 
-	public static Model readFile(String filename) {
+	public static Model readJSONFile(String filename) {
 		JSONParser jparser = new JSONParser();
 		Model model = null;
 		try {
@@ -83,8 +87,28 @@ public class JsonReader {
 		return model;
 	}
 	
+	
+	public static Map<String, String> readIndexFile() {
+		Map<String, String> index = new HashMap<>();
+		try (BufferedReader bReader = new BufferedReader(
+				new InputStreamReader(new FileInputStream("resources/sortedWiki/index.txt"), "UTF8"))) {
+			while (bReader.ready()) {
+				String line = bReader.readLine();
+				String[] lineSplit = line.split("\t");
+				index.put(lineSplit[0], lineSplit[1]+"\t"+lineSplit[0]);
+			}
+		} catch (IOException ioe) {
+			ioe.printStackTrace();
+		}
+		System.out.println("Index eingelesen");
+		return index;
+	}
+	
+	
+	
+	
 	public static void main(String[] args){
-		Model model = readFile("resources/json/Lemmas.json");
+		Model model = readJSONFile("resources/json/Lemmas.json");
 		for(BagOfWords bow: model.getBagOfWordList()){
 			System.out.println(bow.getFeature()+"\n");
 			System.out.println(bow.getID()+"\n");

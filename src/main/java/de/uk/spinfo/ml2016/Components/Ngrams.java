@@ -1,5 +1,6 @@
 package de.uk.spinfo.ml2016.Components;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,22 +40,33 @@ public class Ngrams extends Feature {
 //		return tmptool;
 //	}
 	
-	public Map<String, Double> processWords(List<String> text) {
-		Double toolWordCount = 0.;
-		Map<String, Double> wordMap = new HashMap<>();
+	public List<String> processWords(List<String> text) {
+		List<String> nGramList = new ArrayList<>();
 
 		for (String line : text) {
 			line = line.replace(" ", "_");
 			line = line.toLowerCase();
 			for (int i = 0; i < line.length() - len + 1; i++) {
 				String sub = line.substring(i, i + len);
-				addWord(sub, wordMap);
-				toolWordCount++;
+				nGramList.add(sub);
 			}
-		}
-		wordMap.put("totalWordCount", toolWordCount);
-		
-		return wordMap;
+		}		
+		return nGramList;
 	}
+	
+	
+//	public List<String> processWords(String line) {
+//		List<String> nGramList = new ArrayList<>();
+//
+//		
+//			line = line.replace(" ", "_");
+//			line = line.toLowerCase();
+//			for (int i = 0; i < line.length() - len + 1; i++) {
+//				String sub = line.substring(i, i + len);
+//				nGramList.add(sub);
+//			}	
+//		
+//		return nGramList;
+//	}
 
 }

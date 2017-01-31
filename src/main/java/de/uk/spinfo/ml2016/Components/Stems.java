@@ -1,64 +1,51 @@
 package de.uk.spinfo.ml2016.Components;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.tartarus.snowball.ext.germanStemmer;
 
-import de.uk.spinfo.ml2016.Structures.Tool;
+public class Stems extends Feature {
+	public boolean needsTokenizing = true;
+	private germanStemmer stemmer;
 
-public class Stems extends Feature{
-	
-	@Override
-//	public Tool processWords(Tool tmptool) {
-//		Double toolWordCount = 0.;
-//		Map<String, Double> wordMap = new HashMap<>();
-//		germanStemmer stemmer = new germanStemmer();
+	public Stems() {
+		super();
+		this.stemmer = new germanStemmer();
+	}
+
+//	public List<String> processWords(String word) {
+//		List<String> stemmedList = new ArrayList<>();
+//
 //		try {
-//			
-//			for (String word: tokenizeWords(tmptool.getContext())) {
-//				System.out.println(word);
-//				stemmer.setCurrent(word);
-//				if (stemmer.stem()) {
-//					word = stemmer.getCurrent();
-//				}
-//				addWord(word, wordMap);
-//				toolWordCount++;
+//			stemmer.setCurrent(word);
+//			if (stemmer.stem()) {
+//				word = stemmer.getCurrent();
 //			}
+//
 //		} catch (Exception e) {
 //			e.printStackTrace();
 //		}
-//		tmptool.setWordMap(wordMap);
-//		tmptool.setWordCount(toolWordCount);
-//		return tmptool;
+//		stemmedList.add(word);
+//		return stemmedList;
 //	}
-	
-	
-	public Map<String, Double> processWords(List<String> text) {
-		Double toolWordCount = 0.;
-		Map<String, Double> wordMap = new HashMap<>();
-		germanStemmer stemmer = new germanStemmer();
-		try {
-			
-			for (String word: tokenizeWords(text)) {
+
+	public List<String> processWords(List<String> text) {
+		List<String> stemmedList = new ArrayList<>();
+		for (String word : text) {
+			try {
 				stemmer.setCurrent(word);
 				if (stemmer.stem()) {
 					word = stemmer.getCurrent();
 				}
-				addWord(word, wordMap);
-				toolWordCount++;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		wordMap.put("totalWordCount", toolWordCount);
-		
-		return wordMap;
-	}
-		
-	
 
-	
-	
+			stemmedList.add(word);
+		}
+
+		return stemmedList;
+	}
+
 }

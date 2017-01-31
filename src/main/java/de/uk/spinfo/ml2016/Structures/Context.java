@@ -1,26 +1,30 @@
 package de.uk.spinfo.ml2016.Structures;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Context {
 	
 	private String title;
-	private String context;
-	private String stemmedtitle;
-	private String lemmatizedtitle;
-	private String nGramedTitle;
+	private List<String> context;
+//	private String stemmedtitle;
+//	private String lemmatizedtitle;
+//	private String nGramedTitle;
 	
-	public Context(){
-		
+	public Context(String title){
+		this.title=title;
+		context = new ArrayList<>();
 	}
 	
-	public void setTitle(String title){
-		this.title = title;
+	public String getTitle(){
+		return this.title;
 	}
-	public void addContext(String context){
-		this.context = context;
+	public void addContext(List<String> context){
+		this.context.addAll(context);
 	}
 	
-	public void addStemmedTitle(String stitle){
-		this.stemmedtitle=stitle;
+	public List<String> getContext(){
+		return this.context;
 	}
 
 }

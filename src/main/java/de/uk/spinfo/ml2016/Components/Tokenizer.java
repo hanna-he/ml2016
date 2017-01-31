@@ -22,6 +22,14 @@ public class Tokenizer {
 		this.tokenizer = new TokenizerME(new TokenizerModel(new File("resources/opennlp/de-token.bin")));
 	}
 
+	
+//	public List<String> tokenize(List<String> toTokenize){
+//		List<String> result = new ArrayList<>();
+//		for(String string : toTokenize){
+//			result.addAll(tokenize(string));
+//		}
+//		return result;
+//	}
 	public List<String> tokenize(String string) {
 		List<String> result = new ArrayList<String>();
 		// Klammern hinzugefügt

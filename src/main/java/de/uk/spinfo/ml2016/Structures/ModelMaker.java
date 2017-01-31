@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -14,84 +15,94 @@ import de.uk.spinfo.ml2016.Components.ContextSearcher;
 import de.uk.spinfo.ml2016.Components.Cooccurrence;
 import de.uk.spinfo.ml2016.Components.Feature;
 import de.uk.spinfo.ml2016.Components.FeatureFactory;
+import de.uk.spinfo.ml2016.Components.WikiContext;
 import de.uk.spinfo.ml2016.io.TsvParser;
 import de.uk.spinfo.ml2016.io.Writer;
 
 public class ModelMaker {
-	private int contextFound =0;
-	private int contextFoundInOtherTool=0;
-	private int totalToolCount=0;
-	
+	private int totalToolCount = 0;
+	private Set<ToolPart> toolPartSet = new HashSet<>();
+	private Map<String, Tool> toolMap = new HashMap<>();
+	private WikiContext wikiContext;
+
 	public Model makeModel(String feature, Set<ToolPart> toolPartList) {
+		// hier preprocessing einbauen
+		// getperfectMatches(Tools)-> Map<Tool, Set<String>>
+
 		Model model = createModel(feature, toolPartList);
 		Writer.writeB(model);
 		return model;
 	}
 
-	
-	private void preprocessing(Set<ToolPart> toolPartSet, ContextSearcher contextsearcher){
-		Set<Tool> allTools = new HashSet<>();
-		for(ToolPart tp : toolPartSet){
-			allTools.addAll(tp.getTools());
-		}
-		contextsearcher.getPathToTitleMap(allTools);
-		System.out.println("preprocessing");
+	public void readTSV() {
+		File f = new File("resources/tools.tsv");
+		TsvParser tsvp = new TsvParser();
+		tsvp.parseTsv(f);
+		this.toolMap = tsvp.getTools();
 	}
-	private Model createModel(String featureString, Set<ToolPart> toolPartSet) {
-		Cooccurrence cooccurrence = new Cooccurrence(toolPartSet);
-		Model model = new Model(featureString);
-		FeatureFactory featureFactory = new FeatureFactory();
-		Feature feature = featureFactory.createFeature(featureString);
-		ContextSearcher contextsearcher = new ContextSearcher(feature);
-		preprocessing(toolPartSet, contextsearcher);
-		Set<Tool> toolsWoutContext = new HashSet<>();
-		for (ToolPart toolPart : toolPartSet) {
-			System.out.println(toolPart.getID());
-			BagOfWords bow = new BagOfWords(featureString, toolPart.getID());
-			int totalWordCountBoW = 0;
-			for (Tool tool : toolPart.getTools()) {
-				System.out.println(tool.getName());
-				this.totalToolCount++;
-				if(contextsearcher.getContext(tool)){
-					this.contextFound++;
-				}
-				Map<String, Double> wordMap = feature.processWords(tool.getContext());
-				Double totalWordCountTool = wordMap.get("totalWordCount");
-				totalWordCountBoW+= totalWordCountTool;
-				wordMap.remove("totalWordCount");
-				tool.setWordMap(wordMap);
-				tool.setWordCount(totalWordCountTool);
-				cooccurrence.countCooccurrence(tool);
-				bow.addToolSub(tool.getToolSub());
-				if (tool.getContext().isEmpty()) {
-					toolsWoutContext.add(tool);
-				} else {
-					bow.addTool(tool);
-				}
+
+	public Model makeModelNeu(String featureString) {
+		int contextFoundinTsv = 0;
+		int contextFoundinTsvAndWiki = 0;
+		int contextFoundinWiki = 0;
+		int contextFoundInOtherTool = 0;
+		int noContextFound = 0;
+
+		Model model = null;
+		if (toolPartSet.isEmpty()) {
+			readTSV();
+		}
+		if (wikiContext == null) {
+			wikiContext = new WikiContext(this.toolMap.keySet());
+		}
+		List<Context> contextList = wikiContext.getWikiContext(featureString);
+		for (Context contextObj : contextList) {
+			Tool tool = this.toolMap.get(contextObj.getTitle());
+			// wie genau verhält sich hier die auswertung?
+			List<String> contextFromWiki = contextObj.getContext();
+			List<String> contextFromTsv = tool.getContext();
+			if (!contextFromWiki.isEmpty() && !contextFromTsv.isEmpty()) {
+				contextFoundinTsvAndWiki++;
 			}
-			bow.setTotalWordCount(totalWordCountBoW);
-			model.addBoW(bow);
-			
+			if (!contextFromWiki.isEmpty() && contextFromTsv.isEmpty()) {
+				contextFoundinWiki++;
+
+			}
+			if (contextFromWiki.isEmpty() && !contextFromTsv.isEmpty()) {
+				contextFoundinTsv++;
+			}
+			tool.addContext(contextFromWiki);
+			makeWordMap(tool);
 		}
 
-		// Kontext von referenzierenden Tools hinzufügen
-		this.contextFoundInOtherTool = cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
-		int counter = 0;
-		for(BagOfWords b: model.getBagOfWordList()){
-			for(Tool t : b.getTools()){
-				if(t.getContext().isEmpty()){
-					counter++;
-					System.out.println("Überhaupt keinen Kontext : "+t.getName()+" "+t.getFeaturedName());
-				}
-			}
-		}
-		System.out.println(counter);
-		
-		System.out.println("Insgesamt gibt es "+this.totalToolCount+" Tools \n");
-		System.out.println("Für "+this.contextFound+" Tools wurden Wikikontexte gefunden \n");
-		System.out.println("Für "+this.contextFoundInOtherTool+" Tools wurde der Kontext von referenzierenden Tools verwendet \n");
-		System.out.println("Für "+(toolsWoutContext.size()-this.contextFoundInOtherTool)+" Tools wurden gar keine Kontexte gefunden \n");
+		// getKontextPathFromWikiNormal();
+		// getFeaturedKontextPathFromWiki();
+		// readKontext();
+		// featureKontext();
+		// getContextFromReferencingTools();
+		// writeModelOutputStream();
+		// writeModelImportantInformations();
 		return model;
 	}
+
+	private void makeWordMap(Tool tool) {
+		Map<String, Double> bagOfWords = new HashMap<>();
+		double wordCount = 0.;
+		for (String word : tool.getContext()) {
+			wordCount++;
+			Double count = bagOfWords.get(word);
+			if (count == null) {
+				count = 0.;
+			}
+			bagOfWords.put(word, ++count);
+		}
+		tool.setWordMap(bagOfWords);
+		tool.setWordCount(wordCount);
+	}
+
+	
+
+	
+
 
 }

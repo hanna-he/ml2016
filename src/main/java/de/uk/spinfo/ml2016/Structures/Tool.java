@@ -13,15 +13,23 @@ public class Tool {
 	private Map<Tool, Double> coCounts;
 	private Set<Tool> referencingTools;
 	private Double wordCount;
-	private Set<String> featuredName;
+//	private Set<String> featuredName;
+//	private List<String> tokenizedName;
 	
 	
 	public Tool(String name, List<String> context, ToolSub tsc) {
 		this.toolsub = tsc;
+		
 		this.name = name;
 		this.context = context;
 	}
 	
+//	public List<String> getTokenizedName(){
+//		return this.tokenizedName;
+//	}
+//	public void setTokenizedName(List<String> tokenizedName){
+//		this.tokenizedName = tokenizedName;
+//	}
 	public ToolSub getToolSub(){
 		return this.toolsub;
 	}
@@ -59,12 +67,12 @@ public class Tool {
 	public void setWordCount(Double wordCount){
 		this.wordCount = wordCount;
 	}
-	public void setFeaturedName(Set<String> fn){
-		this.featuredName = fn;
-	}
-	public Set<String> getFeaturedName(){
-		return this.featuredName;
-	}
+//	public void setFeaturedName(Set<String> fn){
+//		this.featuredName = fn;
+//	}
+//	public Set<String> getFeaturedName(){
+//		return this.featuredName;
+//	}
 	public Set<Tool> getReferencingTools(){
 		return this.referencingTools;
 	}
