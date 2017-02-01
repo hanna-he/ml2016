@@ -15,23 +15,151 @@ import de.uk.spinfo.ml2016.Structures.Context;
 import de.uk.spinfo.ml2016.Structures.Tool;
 
 public class ContextSearcher {
-	// private Feature feature;
-	private Map<Tool, Set<String>> possibleTitles;
 	private Tokenizer tokenizer = null;
-	private List<String> tokenizedTitles;
-	private List<String> tokenizedWords;
-	// private List<String> tokenizedTools;
 	private List<Context> perfectMatches;
 	private List<Context> noPerfectMatches;
 	private Set<String> wordSet;
 	private Map<String, String> indexMap;
-	private Map<List<String>, String> tokenizedIndexMap;
+	private Map<String, List<String>> tokenizedTitles;
 
+	//Klasse soll nur einmal erstellt und danach wiederverwendet werden,
+	//egal, ob lemmatisiert, gestemmed oder ge-n-Grammt wird
+	//so müssen zb perfectMatches nur einmal berechnet werden -> Laufzeit sparen
 	public ContextSearcher(Set<String> wordList, Map<String, String> indexMap) {
 		this.wordSet = wordList;
 		this.indexMap = indexMap;
 	}
+	//"Main"-Methode, die alle anderen, privaten Methoden dieser Klasse nacheinander aufruft
+	//es wird eine Liste von Contexten zurückgegeben
+	public List<Context> getContext(Feature feature) {
+		List<Context> allContext = new ArrayList<>();
+		if (this.perfectMatches == null) { // soll nur ein einziges Mal
+											// ausgeführt werden
+			// perfectMatches Pfade finden
+			searchPerfectMatches();
+			// und auslesen aus WikiDump
+			addContextFromPath(this.perfectMatches, feature);
+			System.out.println("Für "+this.perfectMatches.size()+" wurden perfekte Matches gefunden");
+		}
+		// alle anderen Matches zwischen WikiDump-Artikel-Titeln und Strings der
+		// wordList finden
+		try {
+			getOtherMatches(feature);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		addContextFromPath(this.perfectMatches, feature);
 
+		allContext.addAll(noPerfectMatches);
+		allContext.addAll(perfectMatches);
+		return allContext;
+	}
+
+	// Map, in der Strings auf perfektMatches aus Indexdatei gemappt werden,
+	// soll nur einmal ausgeführt werden (da für alle (Stem/Lemma/nGram) gleich)
+	private void searchPerfectMatches() {
+		this.perfectMatches = new ArrayList<>();
+		this.noPerfectMatches= new ArrayList<>();
+		for (String word : wordSet) {
+			Context context = new Context(word);
+			if (indexMap.containsKey(word)) {
+				context.setPath(indexMap.get(word)+"\t"+word);
+				this.perfectMatches.add(context);
+			} else {
+				this.noPerfectMatches.add(context);
+			}
+		}
+	}
+
+	private void getOtherMatches(Feature feature) throws Exception {
+		System.out.println("-- Info: getothermatches anfang --");
+		Map<String, String> featuredIndexMap = featureIndexMap(feature);
+		for (Context context : this.noPerfectMatches) {
+			// tokens abspeichern zur Wiederverwendung (Stem/Lemma)
+			List<String> wordsToBeProcessed = new ArrayList<>();
+			if (feature.needsTokenizing == true) {
+				if (context.getTokenizedTitle() == null) {
+					context.setTokenizedTitle(tokenizeWords(context.getTitle()));
+				}
+				wordsToBeProcessed = context.getTokenizedTitle();
+			} else {
+				wordsToBeProcessed.add(context.getTitle());
+			}
+			context.setFeaturedTitle(feature.processWords(wordsToBeProcessed));
+
+			Map<String, String> featuredIndexMapCopy = new HashMap<>();
+			// !! jedes Mal Copy von der Millionen langen IndexMap
+			featuredIndexMapCopy.putAll(featuredIndexMap);
+			// TODO: hier noch absichern, dass bei mehrteiligen Worten
+			// (Start/Amadeus/merlin) auch mehr als 1
+			// teil im Titel des WikiArtikel gefunden wird -> aber wie?
+			featuredIndexMapCopy.keySet().retainAll(context.getFeaturedTitle());
+			context.setPath(new HashSet<String>(featuredIndexMapCopy.values()));
+			
+		}
+		System.out.println("-- Info: getothermatches ende --");
+	}
+
+	// featured die IndexMap; falls vorher tokenisiert werden soll,
+	// soll dies nur genau einmal geschehen
+	private Map<String, String> featureIndexMap(Feature feature) throws Exception {
+		System.out.println("-- Info: featureIndexMap anfang --");
+		Map<String, String> featuredIndexMap = new HashMap<>();
+		for (String titleOfArticle : this.indexMap.keySet()) {
+			List<String> titlesToBeProcessed = new ArrayList<>();
+			// tokens abspeichern zur Wiederverwendung (Stem/Lemma)
+			if (feature.needsTokenizing == true) {
+				if (this.tokenizedTitles == null) {
+					this.tokenizedTitles = new HashMap<>();
+					tokenizedTitles.put(titleOfArticle, tokenizeWords(titleOfArticle));
+				}
+				titlesToBeProcessed = this.tokenizedTitles.get(titleOfArticle);
+			} else {
+				titlesToBeProcessed.add(titleOfArticle);
+			}
+			String path = indexMap.get(titleOfArticle);
+			// später zum auslesen der Artikels werden die
+			// Original-Title(titleOfArticle) noch einmal gebraucht
+
+			// wird jetzt feature.processWords bei jedem iterieren neu
+			// berechnet?
+			// also ist es so effizienter oder, wenn man es vorher als
+			// List<String> speichert 
+			List<String> featuredWords = feature.processWords(titlesToBeProcessed);
+			for (String featuredWord : feature.processWords(titlesToBeProcessed)) {
+				featuredIndexMap.put(featuredWord, path + "\t" + titleOfArticle);
+			}
+		}
+	
+		System.out.println("-- Info: featureIndexMap ende --");
+		return featuredIndexMap;
+	}
+
+	// ruft für jeden gespeicherten Pfad die readContextFromIndex -Methode auf,
+	// welche dann den Artikel aus dem Dump ausliest
+	private void addContextFromPath(List<Context> contextList, Feature feature) {
+		System.out.println("-- Info: addContextFromPath Anfang --");
+		for (Context context : contextList) {
+			// sonst wird zb der lemmatisierte Kontext zu dem gestemmten
+			// hinzugefügt
+			context.clearContext();
+			Set<String> possibleArticlesPath = context.getPathIndex();
+			if (!possibleArticlesPath.isEmpty()) {
+				for (String path : possibleArticlesPath) {
+					String[] pathSplit = path.split("\t");
+					System.out.println("pathSPlit :"+pathSplit[1]+" , "+pathSplit[0]);
+					context.addContext(feature.processWords(readContextFromIndex(pathSplit[1], pathSplit[0])));
+				}
+//				System.out.println("Info: Kontext gefunden für " + context.getTitle());
+//
+//			} else {
+//				System.out.println("Info: Kein Kontext gefunden für " + context.getTitle());
+			}
+		}
+		System.out.println("-- Info: addContextFromPath ende --");
+	}
+
+	// Tokenisieren
 	private void initalizeTokenizer() {
 		try {
 			this.tokenizer = new Tokenizer();
@@ -42,7 +170,6 @@ public class ContextSearcher {
 
 	private List<String> tokenizeWords(List<String> toTokenize) throws Exception {
 		List<String> tokenizedWords = new ArrayList<>();
-
 		for (String line : toTokenize) {
 			line = line.toLowerCase();
 			tokenizedWords.addAll(tokenizeWords(line));
@@ -58,129 +185,10 @@ public class ContextSearcher {
 		return tokenizedWords;
 	}
 
-	// Map, in der Strings auf perfektMatches aus Indexdatei gemappt werden,
-	//soll nur einmal ausgeführt werden (da für alle (Stem/Lemma/nGram) gleich)
-	private void searchPerfectMatches() {
-		this.perfectMatches = new ArrayList<>();
-		for (String word : wordSet) {
-			Context context = new Context(word);
-			if (indexMap.containsKey(word.toLowerCase())) {				
-				context.addPath(indexMap.get(word));
-				this.perfectMatches.add(context);
-//				Set<String> fakeSet = new HashSet<>();
-//				fakeSet.add(word.toLowerCase() + "\t" + indexMap.get(word));
-//				this.perfectMatches.put(word, fakeSet);
-//			}else{
-//				this.noPerfectMatches.add(context);
-			}
-		}
-	}
-
-	private List<Context> getPerfectMatches() {
-		if (this.perfectMatches == null) {
-			searchPerfectMatches();
-		}
-		System.out.println(perfectMatches.size()+" Tools haben einen perfekten Kontext-Match");
-		return this.perfectMatches;
-
-	}
-
-	private List<Context> getAllMatches(Feature feature) throws Exception {
-
-		List<String> wordListCopy = new ArrayList<>();
-		wordListCopy.addAll(this.wordSet);
-		wordListCopy.removeAll(this.perfectMatches.keySet());
-		
-
-		Map<String, String> featuredIndexMap = new HashMap<>();
-		for (String titleOfArticle : this.indexMap.keySet()) {
-			List<String> titlesToBeProcessed = new ArrayList<>();
-			//tokens abspeichern zur Wiederverwendung (Stem/Lemma)
-			if (feature.needsTokenizing == true) {
-				if (this.tokenizedTitles == null) {
-					this.tokenizedTitles = tokenizeWords(titleOfArticle);
-				}
-				titlesToBeProcessed = this.tokenizedTitles;
-			} else {
-				titlesToBeProcessed.add(titleOfArticle);
-			}
-			String path = indexMap.get(titleOfArticle);
-			tokenizedIndexMap.put(titlesToBeProcessed, path);
-
-			// wird jetzt feature.processWords bei jedem iterieren neu
-			// berechnet?
-			// also ist es so effizienter oder, wenn man es vorher als
-			// List<String> speichert (!aber 2 millionen mal)
-			for (String featuredWord : feature.processWords(titlesToBeProcessed)) {
-				featuredIndexMap.put(featuredWord, path);
-			}
-
-		}
-		List<Context> contextList = new ArrayList<>();
-		for (String word : wordListCopy) {
-			List<String> wordsToBeProcessed = new ArrayList<>();
-			//tokens abspeichern zur Wiederverwendung (Stem/Lemma)
-			if (feature.needsTokenizing == true) {
-				if (this.tokenizedWords == null) {
-					this.tokenizedWords = tokenizeWords(word);
-				}
-				wordsToBeProcessed = this.tokenizedWords;
-			} else {
-				wordsToBeProcessed.add(word);
-			}
-			
-			Map<String, String> featuredIndexMapCopy = new HashMap<>();
-			featuredIndexMapCopy.putAll(featuredIndexMap);
-			// hier noch absichern, dass bei mehrteiligen Worten auch mehr als 1
-			// teil gefunden wird -> aber wie?
-			Context context = new Context(word);
-			context.setFeaturedTitle(feature.processWords(wordsToBeProcessed));
-			featuredIndexMapCopy.keySet().retainAll(context.getFeaturedTitle());
-			context.setPathIndex(new HashSet<String>(featuredIndexMapCopy.values()));
-			contextList.add(context);
-//			matches.put(word, new HashSet<String>(featuredIndexMapCopy.values()));
-		}
-
-//		matches.putAll(getPerfectMatches());
-//		return matches;
-		return contextList;
-	}
-
-	
-	
-	//noch verändern, dass zb perfectmatches context nur einmal ausgelesen wird
-	public List<Context> getContext(Feature feature) {
-		List<Context> matches = new ArrayList<>();
-		try {
-			matches = getAllMatches(feature);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-//		List<Context> contextList = new ArrayList<>();
-		for (Context context : matches) {
-			Set<String> possibleArticlesPath = context.getPathIndex();
-			if (!possibleArticlesPath.isEmpty()) {
-				for (String path : possibleArticlesPath) {
-					String[] pathSplit = path.split("\t");
-					context.addContext(feature.processWords(readDocument(pathSplit[1], pathSplit[0])));
-				}
-				System.out.println("Info: Kontext gefunden für " + context.getTitle());
-
-			} else {
-				System.out.println("Info: Kein Kontext gefunden für " + context.getTitle());
-			}
-		}
-		return matches;
-	}
-	
-	
-	
-	
-	
-
-	// oder besser zu String zusammen fügen -> was verbraucht weniger
-	// Speicher?/geht schneller?
-	private static List<String> readDocument(String title, String path) {
+	// liest den Artikel mit dem Titel titel aus dem Pfad path aus
+	private static List<String> readContextFromIndex(String title, String path) {
+		// oder return-Objekt besser ein String? -> was verbraucht weniger
+		// Speicher?/geht schneller?
 		List<String> context = new ArrayList<>();
 		boolean contextFound = false;
 		try (BufferedReader bReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF8"))) {

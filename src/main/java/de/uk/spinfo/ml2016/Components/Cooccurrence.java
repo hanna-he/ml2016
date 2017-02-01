@@ -24,13 +24,13 @@ public class Cooccurrence {
 	Set<ToolPart> toolPartList;
 	private int referenceListLength = 3;
 
-	public Cooccurrence() {
-//		this.toolPartList = toolPartList;
-		this.toolSet = new HashSet<>();
-//		for (ToolPart toolpart : toolPartList) {
-//			this.toolSet.addAll(toolpart.getTools());
-//
-//		}
+	public Cooccurrence(Set<Tool> toolset) {
+		// this.toolPartList = toolPartList;
+		this.toolSet = toolset;
+		// for (ToolPart toolpart : toolPartList) {
+		// this.toolSet.addAll(toolpart.getTools());
+		//
+		// }
 		System.out.println("Cooccurrence Konstruktor");
 	}
 
@@ -45,50 +45,50 @@ public class Cooccurrence {
 		}
 		tool.setCooccurrenceCounts(coCount);
 	}
-	
+
 	// gibt die anderen Tools, die in ihrem Kontext dieses Tool nennen zurück
 	public void getReferencingTools(Tool tool) {
-//		Set<Tool> referencingTools = new HashSet<>();
+		// Set<Tool> referencingTools = new HashSet<>();
 		Map<Tool, Double> referencingToolsWithNumber = new HashMap<>();
 		Map<Tool, Double> sortedReferencingToolsWithNumber = new HashMap<>();
 		for (Tool otherTool : this.toolSet) {
 			if (otherTool != tool) {
 				for (String word : tool.getFeaturedName()) {
 					if (otherTool.getWordMap().containsKey(word)) {
-//						referencingTools.add(otherTool);
+						// referencingTools.add(otherTool);
 						referencingToolsWithNumber.put(otherTool, otherTool.getWordMap().get(word));
 					}
 				}
 			}
 		}
-		System.out.println("refToolswithnumber.size : "+ referencingToolsWithNumber.size());
-		
-		
+		System.out.println("refToolswithnumber.size : " + referencingToolsWithNumber.size());
+
 		sortedReferencingToolsWithNumber = ChiSquareCalculator.sort(referencingToolsWithNumber);
-		System.out.println("SortedrefToolswithnumber.size : "+ sortedReferencingToolsWithNumber.size());
+		System.out.println("SortedrefToolswithnumber.size : " + sortedReferencingToolsWithNumber.size());
 		List<Tool> allReferencesList = new ArrayList<Tool>(sortedReferencingToolsWithNumber.keySet());
-	
+
 		int len = 0;
-		if(allReferencesList.size()<this.referenceListLength){
+		if (allReferencesList.size() < this.referenceListLength) {
 			len = allReferencesList.size();
-		}else{
+		} else {
 			len = this.referenceListLength;
 		}
 		Set<Tool> bestReferences = new HashSet<>(len);
-		for (int i = 0; i < len ; i++) {
+		for (int i = 0; i < len; i++) {
 			bestReferences.add(allReferencesList.get(i));
 		}
-		
-//		tool.setReferencingTools(referencingTools);
+
+		// tool.setReferencingTools(referencingTools);
 		tool.setReferencingTools(bestReferences);
-		
+
 	}
 
 	public int enrichContextWithReferencingTools(List<Tool> toolsWoutContext, Model model) {
 		int contextFound = 0;
 		try {
-			BufferedWriter bWriter = new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream("resources/ToolsWithoutContext_"+model.getFeature()+"_3844.txt", false), "UTF-8"));
+			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream("resources/ToolsWithoutContext_" + model.getFeature() + "_3844.txt", false),
+					"UTF-8"));
 			for (Tool toolagain : toolsWoutContext) {
 				getReferencingTools(toolagain);
 				if (!toolagain.getReferencingTools().isEmpty()) {
@@ -96,13 +96,12 @@ public class Cooccurrence {
 
 					bWriter.write("\n Für Tool : " + toolagain.getName()
 							+ " wurden die Kontexte folgender Tools hinzugefügt:\n");
-				}
 
-				for (Tool refTool : toolagain.getReferencingTools()) {
-					bWriter.write(refTool.getName() + ", ");
-					toolagain.addContext(refTool.getContext());
+					for (Tool refTool : toolagain.getReferencingTools()) {
+						bWriter.write(refTool.getName() + ", ");
+						toolagain.addContext(refTool.getContext());
+					}
 				}
-				toolagain.getToolSub().getToolPart().getID();
 
 				model.addToolToBagOfWordsWithID(toolagain);
 			}

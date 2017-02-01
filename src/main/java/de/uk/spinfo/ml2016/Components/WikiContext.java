@@ -11,15 +11,15 @@ import de.uk.spinfo.ml2016.io.Reader;
 public class WikiContext {
 	private Map<String, String> indexMap;
 	private ContextSearcher contextsearcher;
-	
-	public WikiContext(Set<String> wordList){
+
+	public WikiContext(Set<String> wordList) {
 		indexMap = Reader.readIndexFile();
+		// nimmt List<String> als Argument, damit die Klasse auch unabhängig von
+		// Tool-Objekten wiederverwendet werden kann
 		contextsearcher = new ContextSearcher(wordList, indexMap);
 	}
-	
-	
-	
-	public List<Context> getWikiContext(String featureString){
+
+	public List<Context> getWikiContext(String featureString) {
 		FeatureFactory featureFactory = new FeatureFactory();
 		Feature feature = featureFactory.createFeature(featureString);
 		List<Context> contextList = contextsearcher.getContext(feature);

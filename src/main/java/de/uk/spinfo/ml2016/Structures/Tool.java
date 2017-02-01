@@ -8,12 +8,12 @@ public class Tool {
 
 	private ToolSub toolsub;
 	private String name;
-	private List<String> context;
+	private List<String> Tsvcontext;
 	private Map<String, Double> wordMap;
 	private Map<Tool, Double> coCounts;
 	private Set<Tool> referencingTools;
 	private Double wordCount;
-//	private Set<String> featuredName;
+	private List<String> featuredName;
 //	private List<String> tokenizedName;
 	
 	
@@ -21,7 +21,7 @@ public class Tool {
 		this.toolsub = tsc;
 		
 		this.name = name;
-		this.context = context;
+		this.Tsvcontext = context;
 	}
 	
 //	public List<String> getTokenizedName(){
@@ -38,11 +38,11 @@ public class Tool {
 	}
 
 	public List<String> getContext() {
-		return this.context;
+		return this.Tsvcontext;
 	}
 
 	public void addContext(List<String> newcontext) {
-		this.context.addAll(newcontext);
+		this.Tsvcontext.addAll(newcontext);
 	}
 
 	public void setWordMap (Map<String, Double> wordMap){
@@ -67,12 +67,12 @@ public class Tool {
 	public void setWordCount(Double wordCount){
 		this.wordCount = wordCount;
 	}
-//	public void setFeaturedName(Set<String> fn){
-//		this.featuredName = fn;
-//	}
-//	public Set<String> getFeaturedName(){
-//		return this.featuredName;
-//	}
+	public void setFeaturedName(List<String> fn){
+		this.featuredName = fn;
+	}
+	public List<String> getFeaturedName(){
+		return this.featuredName;
+	}
 	public Set<Tool> getReferencingTools(){
 		return this.referencingTools;
 	}

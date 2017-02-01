@@ -46,22 +46,27 @@ public class ModelMaker {
 		int contextFoundinTsvAndWiki = 0;
 		int contextFoundinWiki = 0;
 		int contextFoundInOtherTool = 0;
-		int noContextFound = 0;
 
 		Model model = new Model(featureString);
+		//Tsv einlesen
 		if (toolMap.isEmpty()) {
 			readTSV();
+			System.out.println("-- Info: Tsv eingelsen --");
 		}
+		
+		//Kontexte aus Wikipedia-Dump auslesen
 		if (wikiContext == null) {
 			wikiContext = new WikiContext(this.toolMap.keySet());
 		}
 		List<Context> contextList = wikiContext.getWikiContext(featureString);
+		
 		List<Tool> toolsWoutContext = new ArrayList<>();
 		for (Context contextObj : contextList) {
 			Tool tool = this.toolMap.get(contextObj.getTitle());
-			// wie genau verhält sich hier die auswertung?
+			
 			List<String> contextFromWiki = contextObj.getContext();
 			List<String> contextFromTsv = tool.getContext();
+			//wird hier alles richtig ausgewertet???
 			if (!contextFromWiki.isEmpty() && !contextFromTsv.isEmpty()) {
 				contextFoundinTsvAndWiki++;
 			}
@@ -75,13 +80,26 @@ public class ModelMaker {
 				toolsWoutContext.add(tool);
 			}
 			tool.addContext(contextFromWiki);
+			tool.setFeaturedName(contextObj.getFeaturedTitle());
 			makeWordMap(tool);
 			model.addToolToBagOfWordsWithID(tool);
 			
 		}
-		Cooccurrence cooccurrence = new Cooccurrence();
-		cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
-
+		Cooccurrence cooccurrence = new Cooccurrence(new HashSet<Tool>(this.toolMap.values()));
+		contextFoundInOtherTool= cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
+		
+		
+		
+		System.out.println("-----Statistik-----");
+		System.out.println("Insgesamt gibt es "+this.toolMap.size()+" Tools \n");
+		System.out.println("Für "+contextFoundinTsv+" Tools wurden Kontext in der Tsv-Datei gefunden \n");
+		System.out.println("Für "+contextFoundinWiki+" Tools wurden Kontext in dem Wiki-Dump gefunden \n");
+		System.out.println("Für "+contextFoundinTsvAndWiki+" Tools wurden sowohl Kontext in der Tsv-Datei als auch im Wiki-Dump gefunden \n");
+		System.out.println("Für "+contextFoundInOtherTool+" Tools wurde der Kontext von referenzierenden Tools verwendet \n");
+		System.out.println("Für "+(toolsWoutContext.size()-contextFoundInOtherTool)+" Tools wurden gar keine Kontexte gefunden \n");
+		
+		
+		
 		// getKontextPathFromWikiNormal();
 		// getFeaturedKontextPathFromWiki();
 		// readKontext();
@@ -105,6 +123,11 @@ public class ModelMaker {
 		}
 		tool.setWordMap(bagOfWords);
 		tool.setWordCount(wordCount);
+	}
+	
+	public static void main(String[] args){
+		ModelMaker mm = new ModelMaker();
+		mm.makeModelNeu("Stems");
 	}
 
 	

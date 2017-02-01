@@ -10,6 +10,9 @@ public class Context {
 	private String title;
 	private List<String> context;
 	private List<String> featuredTitle;
+	private List<String> tokenizedTitle;
+
+
 	private Set<String> pathIndex;
 //	private String stemmedtitle;
 //	private String lemmatizedtitle;
@@ -19,6 +22,7 @@ public class Context {
 		this.title=title;
 		context = new ArrayList<>();
 		pathIndex = new HashSet<>();
+		featuredTitle = new ArrayList<>();
 	}
 	
 	public String getTitle(){
@@ -34,6 +38,9 @@ public class Context {
 	public List<String> getContext(){
 		return this.context;
 	}
+	public void clearContext(){
+		this.context.clear();
+	}
 
 	public List<String> getFeaturedTitle() {
 		return featuredTitle;
@@ -47,11 +54,21 @@ public class Context {
 		return pathIndex;
 	}
 
-//	public void setPathIndex(Set<String> pathIndex) {
-//		this.pathIndex = pathIndex;
-//	}
-	public void addPath(String pathIndex) {
+	public void setPath(Set<String> pathIndex) {
+		this.pathIndex= pathIndex;
+	}
+	
+	//für perfectMatches, da nur ein path
+	public void setPath(String pathIndex) {
 		this.pathIndex.add(pathIndex);
+	}
+	
+	public List<String> getTokenizedTitle() {
+		return tokenizedTitle;
+	}
+
+	public void setTokenizedTitle(List<String> tokenizedTitle) {
+		this.tokenizedTitle = tokenizedTitle;
 	}
 	
 

@@ -91,7 +91,7 @@ public class Reader {
 	public static Map<String, String> readIndexFile() {
 		Map<String, String> index = new HashMap<>();
 		try (BufferedReader bReader = new BufferedReader(
-				new InputStreamReader(new FileInputStream("resources/sortedWiki/index.txt"), "UTF8"))) {
+				new InputStreamReader(new FileInputStream("resources/sortedWiki/INDEX.txt"), "UTF8"))) {
 			while (bReader.ready()) {
 				String line = bReader.readLine();
 				String[] lineSplit = line.split("\t");
@@ -103,6 +103,7 @@ public class Reader {
 		System.out.println("Index eingelesen");
 		return index;
 	}
+	
 	
 	
 	
