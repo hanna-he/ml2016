@@ -1,9 +1,12 @@
 package de.uk.spinfo.ml2016.Components;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +16,7 @@ import java.util.Set;
 
 import de.uk.spinfo.ml2016.Structures.Context;
 import de.uk.spinfo.ml2016.Structures.Tool;
+import de.uk.spinfo.ml2016.io.Reader;
 
 public class ContextSearcher {
 	private Tokenizer tokenizer = null;
@@ -28,6 +32,7 @@ public class ContextSearcher {
 	public ContextSearcher(Set<String> wordList, Map<String, String> indexMap) {
 		this.wordSet = wordList;
 		this.indexMap = indexMap;
+		this.tokenizedTitles = new HashMap<>();
 	}
 	//"Main"-Methode, die alle anderen, privaten Methoden dieser Klasse nacheinander aufruft
 	//es wird eine Liste von Contexten zurückgegeben
@@ -48,10 +53,25 @@ public class ContextSearcher {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		addContextFromPath(this.perfectMatches, feature);
+		addContextFromPath(this.noPerfectMatches, feature);
 
 		allContext.addAll(noPerfectMatches);
 		allContext.addAll(perfectMatches);
+		
+		
+		
+		System.out.println("ContextSearcher schreiben in 'gefundene Kontexte' fängt an");
+		try {
+			BufferedWriter bWriter = new BufferedWriter(
+					new OutputStreamWriter(new FileOutputStream("resources/gefundeneKontexteMINI.txt", false), "UTF-8"));
+			for (Context context : allContext) {
+				bWriter.write(context.getTitle() + "\t" + context.getPathIndex() + "\n");
+			}
+			bWriter.flush();
+			bWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return allContext;
 	}
 
@@ -63,7 +83,7 @@ public class ContextSearcher {
 		for (String word : wordSet) {
 			Context context = new Context(word);
 			if (indexMap.containsKey(word)) {
-				context.setPath(indexMap.get(word)+"\t"+word);
+				context.setPath(indexMap.get(word));
 				this.perfectMatches.add(context);
 			} else {
 				this.noPerfectMatches.add(context);
@@ -78,7 +98,7 @@ public class ContextSearcher {
 			// tokens abspeichern zur Wiederverwendung (Stem/Lemma)
 			List<String> wordsToBeProcessed = new ArrayList<>();
 			if (feature.needsTokenizing == true) {
-				if (context.getTokenizedTitle() == null) {
+				if (context.getTokenizedTitle().isEmpty()) {
 					context.setTokenizedTitle(tokenizeWords(context.getTitle()));
 				}
 				wordsToBeProcessed = context.getTokenizedTitle();
@@ -86,7 +106,6 @@ public class ContextSearcher {
 				wordsToBeProcessed.add(context.getTitle());
 			}
 			context.setFeaturedTitle(feature.processWords(wordsToBeProcessed));
-
 			Map<String, String> featuredIndexMapCopy = new HashMap<>();
 			// !! jedes Mal Copy von der Millionen langen IndexMap
 			featuredIndexMapCopy.putAll(featuredIndexMap);
@@ -109,11 +128,12 @@ public class ContextSearcher {
 			List<String> titlesToBeProcessed = new ArrayList<>();
 			// tokens abspeichern zur Wiederverwendung (Stem/Lemma)
 			if (feature.needsTokenizing == true) {
-				if (this.tokenizedTitles == null) {
-					this.tokenizedTitles = new HashMap<>();
-					tokenizedTitles.put(titleOfArticle, tokenizeWords(titleOfArticle));
+				titlesToBeProcessed= this.tokenizedTitles.get(titleOfArticle);
+				if(titlesToBeProcessed == null){
+					titlesToBeProcessed=tokenizeWords(titleOfArticle);
+					tokenizedTitles.put(titleOfArticle, titlesToBeProcessed);
 				}
-				titlesToBeProcessed = this.tokenizedTitles.get(titleOfArticle);
+			
 			} else {
 				titlesToBeProcessed.add(titleOfArticle);
 			}
@@ -126,8 +146,8 @@ public class ContextSearcher {
 			// also ist es so effizienter oder, wenn man es vorher als
 			// List<String> speichert 
 			List<String> featuredWords = feature.processWords(titlesToBeProcessed);
-			for (String featuredWord : feature.processWords(titlesToBeProcessed)) {
-				featuredIndexMap.put(featuredWord, path + "\t" + titleOfArticle);
+			for (String featuredWord : featuredWords) {
+				featuredIndexMap.put(featuredWord, path);
 			}
 		}
 	
@@ -147,7 +167,7 @@ public class ContextSearcher {
 			if (!possibleArticlesPath.isEmpty()) {
 				for (String path : possibleArticlesPath) {
 					String[] pathSplit = path.split("\t");
-					System.out.println("pathSPlit :"+pathSplit[1]+" , "+pathSplit[0]);
+//					System.out.println("pathSPlit :"+pathSplit[1]+" , "+pathSplit[0]);
 					context.addContext(feature.processWords(readContextFromIndex(pathSplit[1], pathSplit[0])));
 				}
 //				System.out.println("Info: Kontext gefunden für " + context.getTitle());
@@ -168,7 +188,7 @@ public class ContextSearcher {
 		}
 	}
 
-	private List<String> tokenizeWords(List<String> toTokenize) throws Exception {
+	public List<String> tokenizeWords(List<String> toTokenize) throws Exception {
 		List<String> tokenizedWords = new ArrayList<>();
 		for (String line : toTokenize) {
 			line = line.toLowerCase();
@@ -177,7 +197,7 @@ public class ContextSearcher {
 		return tokenizedWords;
 	}
 
-	private List<String> tokenizeWords(String toTokenize) throws Exception {
+	public List<String> tokenizeWords(String toTokenize) throws Exception {
 		if (this.tokenizer == null) {
 			initalizeTokenizer();
 		}
@@ -218,6 +238,21 @@ public class ContextSearcher {
 
 		return context;
 
+	}
+	
+	
+	
+	
+	public static void main(String[]args){
+		Set<String> articlesToSearch = new HashSet<>();
+		articlesToSearch.add("Flasche");
+		articlesToSearch.add("Lampe");
+		articlesToSearch.add("Türe");
+		
+		ContextSearcher contextsearcher = new ContextSearcher(articlesToSearch, Reader.readIndexFile());
+		FeatureFactory featureFactory = new FeatureFactory();
+		Feature feature = featureFactory.createFeature("Lemmas");
+		List<Context> contextList = contextsearcher.getContext(feature);
 	}
 
 }

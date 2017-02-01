@@ -1,5 +1,6 @@
 package de.uk.spinfo.ml2016.Structures;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -8,28 +9,43 @@ public class Tool {
 
 	private ToolSub toolsub;
 	private String name;
-	private List<String> Tsvcontext;
+	private List<String> tsvContext;
+	private List<String> tokenizedTsvcontext;
+	private List<String> featuredContext;
 	private Map<String, Double> wordMap;
-	private Map<Tool, Double> coCounts;
+//	private Map<Tool, Double> coCounts;
 	private Set<Tool> referencingTools;
 	private Double wordCount;
 	private List<String> featuredName;
-//	private List<String> tokenizedName;
 	
 	
 	public Tool(String name, List<String> context, ToolSub tsc) {
 		this.toolsub = tsc;
 		
 		this.name = name;
-		this.Tsvcontext = context;
+		this.tsvContext = context;
+		this.featuredContext=new ArrayList<>();
 	}
-	
-//	public List<String> getTokenizedName(){
-//		return this.tokenizedName;
-//	}
-//	public void setTokenizedName(List<String> tokenizedName){
-//		this.tokenizedName = tokenizedName;
-//	}
+		
+	public List<String> getTokenizedTsvcontext() {
+		return tokenizedTsvcontext;
+	}
+
+	public void setTokenizedTsvcontext(List<String> tokenizedTsvcontext) {
+		this.tokenizedTsvcontext = tokenizedTsvcontext;
+	}
+
+	public List<String> getFeaturedContext() {
+		return featuredContext;
+	}
+	public void clearFeaturedContext() {
+		this.featuredContext.clear();;
+	}
+
+	public void addFeaturedContext(List<String> featuredContext) {
+		this.featuredContext.addAll(featuredContext);
+	}
+
 	public ToolSub getToolSub(){
 		return this.toolsub;
 	}
@@ -38,11 +54,11 @@ public class Tool {
 	}
 
 	public List<String> getContext() {
-		return this.Tsvcontext;
+		return this.tsvContext;
 	}
 
 	public void addContext(List<String> newcontext) {
-		this.Tsvcontext.addAll(newcontext);
+		this.tsvContext.addAll(newcontext);
 	}
 
 	public void setWordMap (Map<String, Double> wordMap){
@@ -53,12 +69,12 @@ public class Tool {
 	}
 
 	
-	public void setCooccurrenceCounts (Map<Tool, Double> coCounts){
-		this.coCounts = coCounts;
-	}
-	public Map<Tool, Double> getCooccurrenceCounts (){
-		return this.coCounts;
-	}
+//	public void setCooccurrenceCounts (Map<Tool, Double> coCounts){
+//		this.coCounts = coCounts;
+//	}
+//	public Map<Tool, Double> getCooccurrenceCounts (){
+//		return this.coCounts;
+//	}
 
 	
 	public Double getWordCount(){

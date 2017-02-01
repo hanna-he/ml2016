@@ -34,17 +34,17 @@ public class Cooccurrence {
 		System.out.println("Cooccurrence Konstruktor");
 	}
 
-	public void countCooccurrence(Tool tool) {
-		Map<Tool, Double> coCount = new HashMap<>();
-		Map<String, Double> wordMap = tool.getWordMap();
-		for (Tool otherTool : this.toolSet) {
-			String otherName = otherTool.getName();
-			if (wordMap.containsKey(otherName)) {
-				coCount.put(otherTool, wordMap.get(otherName));
-			}
-		}
-		tool.setCooccurrenceCounts(coCount);
-	}
+//	public void countCooccurrence(Tool tool) {
+//		Map<Tool, Double> coCount = new HashMap<>();
+//		Map<String, Double> wordMap = tool.getWordMap();
+//		for (Tool otherTool : this.toolSet) {
+//			String otherName = otherTool.getName();
+//			if (wordMap.containsKey(otherName)) {
+//				coCount.put(otherTool, wordMap.get(otherName));
+//			}
+//		}
+//		tool.setCooccurrenceCounts(coCount);
+//	}
 
 	// gibt die anderen Tools, die in ihrem Kontext dieses Tool nennen zurück
 	public void getReferencingTools(Tool tool) {
@@ -54,6 +54,7 @@ public class Cooccurrence {
 		for (Tool otherTool : this.toolSet) {
 			if (otherTool != tool) {
 				for (String word : tool.getFeaturedName()) {
+//					System.out.println(tool.getFeaturedName());
 					if (otherTool.getWordMap().containsKey(word)) {
 						// referencingTools.add(otherTool);
 						referencingToolsWithNumber.put(otherTool, otherTool.getWordMap().get(word));
@@ -61,10 +62,10 @@ public class Cooccurrence {
 				}
 			}
 		}
-		System.out.println("refToolswithnumber.size : " + referencingToolsWithNumber.size());
+//		System.out.println("refToolswithnumber.size : " + referencingToolsWithNumber.size());
 
 		sortedReferencingToolsWithNumber = ChiSquareCalculator.sort(referencingToolsWithNumber);
-		System.out.println("SortedrefToolswithnumber.size : " + sortedReferencingToolsWithNumber.size());
+//		System.out.println("SortedrefToolswithnumber.size : " + sortedReferencingToolsWithNumber.size());
 		List<Tool> allReferencesList = new ArrayList<Tool>(sortedReferencingToolsWithNumber.keySet());
 
 		int len = 0;

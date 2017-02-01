@@ -100,7 +100,7 @@ public class Reader {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		System.out.println("Index eingelesen");
+		System.out.println("--Info: Wikipedia Dump besteht aus "+index.size()+" Artikeln--");
 		return index;
 	}
 	

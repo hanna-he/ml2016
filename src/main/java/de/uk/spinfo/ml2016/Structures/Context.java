@@ -6,39 +6,42 @@ import java.util.List;
 import java.util.Set;
 
 public class Context {
-	
+
 	private String title;
 	private List<String> context;
 	private List<String> featuredTitle;
 	private List<String> tokenizedTitle;
 
-
 	private Set<String> pathIndex;
-//	private String stemmedtitle;
-//	private String lemmatizedtitle;
-//	private String nGramedTitle;
-	
-	public Context(String title){
-		this.title=title;
+	// private String stemmedtitle;
+	// private String lemmatizedtitle;
+	// private String nGramedTitle;
+
+	public Context(String title) {
+		this.title = title;
 		context = new ArrayList<>();
 		pathIndex = new HashSet<>();
 		featuredTitle = new ArrayList<>();
 	}
-	
-	public String getTitle(){
+
+	public String getTitle() {
 		return this.title;
 	}
-	public void addContext(List<String> context){
+
+	public void addContext(List<String> context) {
 		this.context.addAll(context);
 	}
-//	public void addContext(String context){
-//		this.context.add(context);
-//	}
-	
-	public List<String> getContext(){
+	// public void addContext(String context){
+	// this.context.add(context);
+	// }
+
+	public List<String> getContext() {
 		return this.context;
 	}
-	public void clearContext(){
+
+	// da es immer wieder verwendet wird; aber nicht Stemms und Lemmas und den
+	// gleichen Kontext geschrieben werden sollen
+	public void clearContext() {
 		this.context.clear();
 	}
 
@@ -55,14 +58,14 @@ public class Context {
 	}
 
 	public void setPath(Set<String> pathIndex) {
-		this.pathIndex= pathIndex;
+		this.pathIndex = pathIndex;
 	}
-	
-	//für perfectMatches, da nur ein path
+
+	// für perfectMatches, da nur ein path
 	public void setPath(String pathIndex) {
 		this.pathIndex.add(pathIndex);
 	}
-	
+
 	public List<String> getTokenizedTitle() {
 		return tokenizedTitle;
 	}
@@ -70,6 +73,5 @@ public class Context {
 	public void setTokenizedTitle(List<String> tokenizedTitle) {
 		this.tokenizedTitle = tokenizedTitle;
 	}
-	
 
 }

@@ -56,7 +56,8 @@ public class TsvParser {
 				// zb Z.978 quasi leer, 1498 Kontext leer
 				if (!lineSplit[0].isEmpty() && !lineSplit[1].isEmpty()) {
 					List<String> context = new ArrayList<>();
-					String name = lineSplit[0];
+					//LOWERCASE
+					String name = lineSplit[0].toLowerCase();
 
 					Integer toolNumber = Integer.valueOf(Character.toString(lineSplit[2].charAt(1)));
 					String toolSubId = lineSplit[2].replace(")", "").replace("(", "");
@@ -75,6 +76,9 @@ public class TsvParser {
 					if (!tools.containsKey(name)) {
 						tools.put(name, tool);
 					}
+					//wenn die neuen Konstruktoren in Tool, ToolSub
+					//funktionieren bräuchte man diesen Teil nicht mehr
+					//es würden weider Sets reichen, statt Maps
 					ToolSub tmpToolsub = toolSubs.get(toolSubId);
 					if (tmpToolsub == null) {
 						tmpToolsub = ts;
@@ -98,7 +102,23 @@ public class TsvParser {
 		IOException ioe) {
 			ioe.printStackTrace();
 		}
-		System.out.println(toolcount);
+//		for(ToolPart tp: getToolPartSet()){
+//			System.out.println(tp.getID()+"\n");
+//			for(ToolSub ts : tp.getToolSubSet()){
+//				System.out.println(ts.getID()+"\n");
+//				for(Tool tool:ts.getToolList()){
+//					System.out.println(tool.getName()+" ,");
+//				}
+//			}
+//			System.out.println("\n");
+//		}
+//		System.out.println(toolcount);
+	}
+	
+	public static void main(String[] args){
+		File f = new File("resources/tools.tsv");
+		TsvParser tsvp = new TsvParser();
+		tsvp.parseTsv(f);
 	}
 
 	
