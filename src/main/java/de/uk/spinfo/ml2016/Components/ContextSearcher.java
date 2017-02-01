@@ -21,7 +21,8 @@ public class ContextSearcher {
 	private List<String> tokenizedTitles;
 	private List<String> tokenizedWords;
 	// private List<String> tokenizedTools;
-	private Map<String, Set<String>> perfectMatchesMap;
+	private List<Context> perfectMatches;
+	private List<Context> noPerfectMatches;
 	private Set<String> wordSet;
 	private Map<String, String> indexMap;
 	private Map<List<String>, String> tokenizedIndexMap;
@@ -57,33 +58,39 @@ public class ContextSearcher {
 		return tokenizedWords;
 	}
 
-	// Map, in der Strings auf perfektMatches aus Indexdatei gemappt werden
+	// Map, in der Strings auf perfektMatches aus Indexdatei gemappt werden,
+	//soll nur einmal ausgeführt werden (da für alle (Stem/Lemma/nGram) gleich)
 	private void searchPerfectMatches() {
-		this.perfectMatchesMap = new HashMap<>();
+		this.perfectMatches = new ArrayList<>();
 		for (String word : wordSet) {
-			if (indexMap.containsKey(word.toLowerCase())) {
-				Set<String> fakeSet = new HashSet<>();
-				fakeSet.add(word.toLowerCase() + "\t" + indexMap.get(word));
-				this.perfectMatchesMap.put(word, fakeSet);
+			Context context = new Context(word);
+			if (indexMap.containsKey(word.toLowerCase())) {				
+				context.addPath(indexMap.get(word));
+				this.perfectMatches.add(context);
+//				Set<String> fakeSet = new HashSet<>();
+//				fakeSet.add(word.toLowerCase() + "\t" + indexMap.get(word));
+//				this.perfectMatches.put(word, fakeSet);
+//			}else{
+//				this.noPerfectMatches.add(context);
 			}
 		}
 	}
 
-	private Map<String, Set<String>> getPerfectMatches() {
-		if (this.perfectMatchesMap == null) {
+	private List<Context> getPerfectMatches() {
+		if (this.perfectMatches == null) {
 			searchPerfectMatches();
 		}
-		System.out.println(perfectMatchesMap.size()+" Tools haben einen perfekten Kontext-Match");
-		return this.perfectMatchesMap;
+		System.out.println(perfectMatches.size()+" Tools haben einen perfekten Kontext-Match");
+		return this.perfectMatches;
 
 	}
 
-	private Map<String, Set<String>> getAllMatches(Feature feature) throws Exception {
-		Map<String, Set<String>> matches = new HashMap<>();
+	private List<Context> getAllMatches(Feature feature) throws Exception {
 
 		List<String> wordListCopy = new ArrayList<>();
 		wordListCopy.addAll(this.wordSet);
-		wordListCopy.removeAll(this.perfectMatchesMap.keySet());
+		wordListCopy.removeAll(this.perfectMatches.keySet());
+		
 
 		Map<String, String> featuredIndexMap = new HashMap<>();
 		for (String titleOfArticle : this.indexMap.keySet()) {
@@ -109,6 +116,7 @@ public class ContextSearcher {
 			}
 
 		}
+		List<Context> contextList = new ArrayList<>();
 		for (String word : wordListCopy) {
 			List<String> wordsToBeProcessed = new ArrayList<>();
 			//tokens abspeichern zur Wiederverwendung (Stem/Lemma)
@@ -125,42 +133,44 @@ public class ContextSearcher {
 			featuredIndexMapCopy.putAll(featuredIndexMap);
 			// hier noch absichern, dass bei mehrteiligen Worten auch mehr als 1
 			// teil gefunden wird -> aber wie?
-			featuredIndexMapCopy.keySet().retainAll(feature.processWords(wordsToBeProcessed));
-
-			matches.put(word, new HashSet<String>(featuredIndexMapCopy.values()));
+			Context context = new Context(word);
+			context.setFeaturedTitle(feature.processWords(wordsToBeProcessed));
+			featuredIndexMapCopy.keySet().retainAll(context.getFeaturedTitle());
+			context.setPathIndex(new HashSet<String>(featuredIndexMapCopy.values()));
+			contextList.add(context);
+//			matches.put(word, new HashSet<String>(featuredIndexMapCopy.values()));
 		}
 
-		matches.putAll(getPerfectMatches());
-		return matches;
-
+//		matches.putAll(getPerfectMatches());
+//		return matches;
+		return contextList;
 	}
 
 	
 	
 	//noch verändern, dass zb perfectmatches context nur einmal ausgelesen wird
 	public List<Context> getContext(Feature feature) {
-		Map<String, Set<String>> matches = new HashMap<>();
+		List<Context> matches = new ArrayList<>();
 		try {
 			matches = getAllMatches(feature);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		List<Context> contextList = new ArrayList<>();
-		for (String word : matches.keySet()) {
-			Context context = new Context(word);
-			Set<String> possibleArticlesPath = matches.get(word);
+//		List<Context> contextList = new ArrayList<>();
+		for (Context context : matches) {
+			Set<String> possibleArticlesPath = context.getPathIndex();
 			if (!possibleArticlesPath.isEmpty()) {
 				for (String path : possibleArticlesPath) {
 					String[] pathSplit = path.split("\t");
 					context.addContext(feature.processWords(readDocument(pathSplit[1], pathSplit[0])));
 				}
-				System.out.println("Info: Kontext gefunden für " + word);
+				System.out.println("Info: Kontext gefunden für " + context.getTitle());
 
 			} else {
-				System.out.println("Info: Kein Kontext gefunden für " + word);
+				System.out.println("Info: Kein Kontext gefunden für " + context.getTitle());
 			}
 		}
-		return contextList;
+		return matches;
 	}
 	
 	

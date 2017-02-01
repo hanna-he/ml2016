@@ -24,13 +24,13 @@ public class Cooccurrence {
 	Set<ToolPart> toolPartList;
 	private int referenceListLength = 3;
 
-	public Cooccurrence(Set<ToolPart> toolPartList) {
-		this.toolPartList = toolPartList;
+	public Cooccurrence() {
+//		this.toolPartList = toolPartList;
 		this.toolSet = new HashSet<>();
-		for (ToolPart toolpart : toolPartList) {
-			this.toolSet.addAll(toolpart.getTools());
-
-		}
+//		for (ToolPart toolpart : toolPartList) {
+//			this.toolSet.addAll(toolpart.getTools());
+//
+//		}
 		System.out.println("Cooccurrence Konstruktor");
 	}
 
@@ -84,7 +84,7 @@ public class Cooccurrence {
 		
 	}
 
-	public int enrichContextWithReferencingTools(Set<Tool> toolsWoutContext, Model model) {
+	public int enrichContextWithReferencingTools(List<Tool> toolsWoutContext, Model model) {
 		int contextFound = 0;
 		try {
 			BufferedWriter bWriter = new BufferedWriter(

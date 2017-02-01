@@ -41,7 +41,7 @@ public class Reader {
 				JSONArray boWArray = (JSONArray) obj2.get("Bag_Of_Words");
 				Long longValue = (Long) obj2.get("ClassId");
 				int classID = longValue.intValue();
-				BagOfWords bow = new BagOfWords(feature, classID);
+				BagOfWords bow = new BagOfWords(classID);
 
 				JSONArray jsToolSubs = (JSONArray) obj2.get("ToolSubs");
 				for (int l = 0; l < jsToolSubs.size(); l++) {
@@ -108,16 +108,16 @@ public class Reader {
 	
 	
 	public static void main(String[] args){
-		Model model = readJSONFile("resources/json/Lemmas.json");
-		for(BagOfWords bow: model.getBagOfWordList()){
-			System.out.println(bow.getFeature()+"\n");
-			System.out.println(bow.getID()+"\n");
-			for(Tool tool: bow.getTools()){
-				System.out.println(tool.toString()+"\n");
-			}
-			for(ToolSub ts : bow.getToolSubSet()){
-				System.out.println(ts.getID()+" "+ts.getName()+"\n");
-			}
-		}
+//		Model model = readJSONFile("resources/json/Lemmas.json");
+//		for(BagOfWords bow: model.getBagOfWordList()){
+//			System.out.println(bow.getFeature()+"\n");
+//			System.out.println(bow.getID()+"\n");
+//			for(Tool tool: bow.getTools()){
+//				System.out.println(tool.toString()+"\n");
+//			}
+//			for(ToolSub ts : bow.getToolSubSet()){
+//				System.out.println(ts.getID()+" "+ts.getName()+"\n");
+//			}
+//		}
 	}
 }
