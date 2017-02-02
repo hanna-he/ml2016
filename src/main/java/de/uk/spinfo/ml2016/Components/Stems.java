@@ -6,7 +6,6 @@ import java.util.List;
 import org.tartarus.snowball.ext.germanStemmer;
 
 public class Stems extends Feature {
-	public boolean needsTokenizing = true;
 	private germanStemmer stemmer;
 
 	public Stems() {
@@ -34,9 +33,9 @@ public class Stems extends Feature {
 		List<String> stemmedList = new ArrayList<>();
 		for (String word : text) {
 			try {
-				stemmer.setCurrent(word);
-				if (stemmer.stem()) {
-					word = stemmer.getCurrent();
+				this.stemmer.setCurrent(word);
+				if (this.stemmer.stem()) {
+					word = this.stemmer.getCurrent();
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

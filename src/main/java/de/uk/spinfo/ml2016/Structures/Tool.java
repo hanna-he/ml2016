@@ -13,18 +13,18 @@ public class Tool {
 	private List<String> tokenizedTsvcontext;
 	private List<String> featuredContext;
 	private Map<String, Double> wordMap;
-//	private Map<Tool, Double> coCounts;
+	private Set<Tool> coCounts;
 	private Set<Tool> referencingTools;
 	private Double wordCount;
 	private List<String> featuredName;
 	
 	
 	public Tool(String name, List<String> context, ToolSub tsc) {
-		this.toolsub = tsc;
-		
+		this.toolsub = tsc;		
 		this.name = name;
 		this.tsvContext = context;
 		this.featuredContext=new ArrayList<>();
+		this.tokenizedTsvcontext = new ArrayList<>();
 	}
 		
 	public List<String> getTokenizedTsvcontext() {
@@ -69,12 +69,12 @@ public class Tool {
 	}
 
 	
-//	public void setCooccurrenceCounts (Map<Tool, Double> coCounts){
-//		this.coCounts = coCounts;
-//	}
-//	public Map<Tool, Double> getCooccurrenceCounts (){
-//		return this.coCounts;
-//	}
+	public void setCooccurrenceCounts (Set<Tool> coCounts){
+		this.coCounts = coCounts;
+	}
+	public Set<Tool> getCooccurrenceCounts (){
+		return this.coCounts;
+	}
 
 	
 	public Double getWordCount(){

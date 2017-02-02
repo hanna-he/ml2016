@@ -15,27 +15,10 @@ import de.uk.spinfo.ml2016.Structures.Tool;
 
 public abstract class Feature {
 	public boolean needsTokenizing = false;
-	
-//	public List<String> processWords(List<String> text){
-//		List<String> processedWords = new ArrayList<>();
-//		for(String words : text){
-//			processedWords.addAll(processWords(words));
-//		}
-//		return processedWords;
-//	}
+
 	public abstract List<String> processWords(List<String> text);
 	
-//	protected void addWord(String word, Map<String, Double> bagOfAllWords) {
-//		Double count = bagOfAllWords.get(word);
-//		if (count == null) {
-//			count = 0.;
-//		}
-//		bagOfAllWords.put(word, ++count);
-//		
-//	}
-	
 
-	
 	
 	public List<String> filterStopwords(List<String> featuredText){
 		List<String> stopwords = new ArrayList<>();

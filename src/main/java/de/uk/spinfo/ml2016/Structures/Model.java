@@ -38,7 +38,7 @@ public class Model {
 			bow.addTool(tool);
 			this.bowList.add(bow);
 		}
-		//evtl noch neues BOW anlegen, falls es es noch nicht gibt
+		
 	}
 
 	public String getFeature() {

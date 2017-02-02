@@ -22,7 +22,7 @@ import de.uk.spinfo.ml2016.Structures.Model;
 import de.uk.spinfo.ml2016.Structures.Tool;
 import de.uk.spinfo.ml2016.Structures.ToolSub;
 
-public class Reader {
+public class JSONReader {
 
 	public static Model readJSONFile(String filename) {
 		JSONParser jparser = new JSONParser();
@@ -88,37 +88,7 @@ public class Reader {
 	}
 	
 	
-	public static Map<String, String> readIndexFile() {
-		Map<String, String> index = new HashMap<>();
-		try (BufferedReader bReader = new BufferedReader(
-				new InputStreamReader(new FileInputStream("resources/sortedWiki/INDEX.txt"), "UTF8"))) {
-			while (bReader.ready()) {
-				String line = bReader.readLine();
-				String[] lineSplit = line.split("\t");
-				index.put(lineSplit[0], lineSplit[1]+"\t"+lineSplit[0]);
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-		System.out.println("--Info: Wikipedia Dump besteht aus "+index.size()+" Artikeln--");
-		return index;
-	}
 	
 	
-	
-	
-	
-	public static void main(String[] args){
-//		Model model = readJSONFile("resources/json/Lemmas.json");
-//		for(BagOfWords bow: model.getBagOfWordList()){
-//			System.out.println(bow.getFeature()+"\n");
-//			System.out.println(bow.getID()+"\n");
-//			for(Tool tool: bow.getTools()){
-//				System.out.println(tool.toString()+"\n");
-//			}
-//			for(ToolSub ts : bow.getToolSubSet()){
-//				System.out.println(ts.getID()+" "+ts.getName()+"\n");
-//			}
-//		}
-	}
+
 }

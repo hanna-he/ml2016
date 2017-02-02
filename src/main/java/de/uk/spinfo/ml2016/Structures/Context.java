@@ -11,17 +11,14 @@ public class Context {
 	private List<String> context;
 	private List<String> featuredTitle;
 	private List<String> tokenizedTitle;
-
 	private Set<String> pathIndex;
-	// private String stemmedtitle;
-	// private String lemmatizedtitle;
-	// private String nGramedTitle;
 
 	public Context(String title) {
 		this.title = title;
 		context = new ArrayList<>();
 		pathIndex = new HashSet<>();
 		featuredTitle = new ArrayList<>();
+		tokenizedTitle = new ArrayList<>();
 	}
 
 	public String getTitle() {
@@ -31,15 +28,11 @@ public class Context {
 	public void addContext(List<String> context) {
 		this.context.addAll(context);
 	}
-	// public void addContext(String context){
-	// this.context.add(context);
-	// }
-
 	public List<String> getContext() {
 		return this.context;
 	}
 
-	// da es immer wieder verwendet wird; aber nicht Stemms und Lemmas und den
+	// da es immer wieder verwendet wird; aber nicht Stemms und Lemmas in den
 	// gleichen Kontext geschrieben werden sollen
 	public void clearContext() {
 		this.context.clear();

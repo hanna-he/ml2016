@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class BagOfWords {
-//	private String feature;
 	private Integer id;
 	private Map<String, Double> wordMap;
 	private Set<Tool> toolSet;
@@ -18,7 +17,6 @@ public class BagOfWords {
 	
 	public BagOfWords( int id){
 		this.id = id;
-//		this.feature=feature;
 		this.wordMap = new HashMap<>();
 		this.toolSet = new HashSet<>();
 		this.toolSubSet = new HashSet<>();
@@ -32,9 +30,6 @@ public class BagOfWords {
 		}
 		return this.totalCount;
 	}
-//	public String getFeature(){
-//		return this.feature;
-//	}
 	public int getID(){
 		return this.id;
 	}
@@ -98,9 +93,6 @@ public class BagOfWords {
 		if(this == o){
 			return true;
 		}
-//		if (!this.feature.equals( ((BagOfWords)o).feature ) ){
-//			return false;
-//		}
 		if(this.id != ((BagOfWords)o).id){
 			return false;
 		}

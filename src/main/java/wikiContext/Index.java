@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Preprocessing;
+package wikiContext;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,30 +14,31 @@ import java.util.List;
 public class Index {
 
 	public static void makeIndexFile() {
+		String fileOutputName= "resources/sortedWiki/indexMini.txt";
+		File writeIn = new File(fileOutputName);
+		if(writeIn.exists()){
+			writeIn.renameTo(new File("resources/sortedWiki/INDEX_alt.txt"));
+		}
 		File f = new File("resources/extractedWiki");
-		int counter = 0;
+		
 		for (File folder : f.listFiles()) {
 			for (String datafile : folder.list()) {
-				counter += makeIndex(datafile, folder);
+				makeIndex(datafile, folder, fileOutputName);
 			}
 		}
-		System.out.println(counter);
 	}
 
-	private static int makeIndex(String datafile, File folder) {
-		int counter =0;
-		String direction = "resources/sortedWiki/";
+	private static void makeIndex(String datafile, File folder, String fileOutputName) {
+	
 		String title = "";
 		try (BufferedWriter fWriter = new BufferedWriter(
-				new OutputStreamWriter(new FileOutputStream(direction + "INDEX.txt", true), "UTF-8"))) {
+				new OutputStreamWriter(new FileOutputStream(fileOutputName, true), "UTF-8"))) {
 			try (BufferedReader bReader = new BufferedReader(
 					new InputStreamReader(new FileInputStream(folder.toString() + "/" + datafile), "UTF8"))) {
 				while (bReader.ready()) {
 					String line = bReader.readLine();
 					if (line.startsWith("<doc id")) {
-						counter++;
 						title = line.split("title=")[1].toLowerCase().replace("\"", "").replace(">", "");
-//						System.out.println(title);
 						fWriter.write(title + "\t" + folder.toString() + "/" + datafile+"\n");
 					}
 					
@@ -50,7 +51,7 @@ public class Index {
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		return counter;
+		
 	}
 	public static void main(String[] args){
 		

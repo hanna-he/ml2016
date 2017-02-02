@@ -86,7 +86,7 @@ public class Writer {
 	
 	
 	
-	// momentan nicht in Gebrauch
+	// momentan nicht in Gebrauch, da exception
 	public static void writeBagOfWords(Model model) {
 		String feature = model.getFeature();
 		Gson gson = new Gson();

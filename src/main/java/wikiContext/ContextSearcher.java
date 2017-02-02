@@ -1,11 +1,8 @@
-package de.uk.spinfo.ml2016.Components;
+package wikiContext;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,9 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import de.uk.spinfo.ml2016.Components.Feature;
+import de.uk.spinfo.ml2016.Components.FeatureFactory;
+import de.uk.spinfo.ml2016.Components.Tokenizer;
 import de.uk.spinfo.ml2016.Structures.Context;
-import de.uk.spinfo.ml2016.Structures.Tool;
-import de.uk.spinfo.ml2016.io.Reader;
 
 public class ContextSearcher {
 	private Tokenizer tokenizer = null;
@@ -26,16 +24,19 @@ public class ContextSearcher {
 	private Map<String, String> indexMap;
 	private Map<String, List<String>> tokenizedTitles;
 
-	//Klasse soll nur einmal erstellt und danach wiederverwendet werden,
-	//egal, ob lemmatisiert, gestemmed oder ge-n-Grammt wird
-	//so müssen zb perfectMatches nur einmal berechnet werden -> Laufzeit sparen
+	// Klasse soll nur einmal erstellt und danach wiederverwendet werden,
+	// egal, ob lemmatisiert, gestemmed oder ge-n-Grammt wird
+	// so müssen zb perfectMatches nur einmal berechnet werden -> Laufzeit
+	// sparen
 	public ContextSearcher(Set<String> wordList, Map<String, String> indexMap) {
 		this.wordSet = wordList;
 		this.indexMap = indexMap;
 		this.tokenizedTitles = new HashMap<>();
 	}
-	//"Main"-Methode, die alle anderen, privaten Methoden dieser Klasse nacheinander aufruft
-	//es wird eine Liste von Contexten zurückgegeben
+
+	// "Main"-Methode, die alle anderen, privaten Methoden dieser Klasse
+	// nacheinander aufruft
+	// es wird eine Liste von Contexten zurückgegeben
 	public List<Context> getContext(Feature feature) {
 		List<Context> allContext = new ArrayList<>();
 		if (this.perfectMatches == null) { // soll nur ein einziges Mal
@@ -44,7 +45,7 @@ public class ContextSearcher {
 			searchPerfectMatches();
 			// und auslesen aus WikiDump
 			addContextFromPath(this.perfectMatches, feature);
-			System.out.println("Für "+this.perfectMatches.size()+" wurden perfekte Matches gefunden");
+			System.out.println("Für " + this.perfectMatches.size() + " wurden perfekte Matches gefunden");
 		}
 		// alle anderen Matches zwischen WikiDump-Artikel-Titeln und Strings der
 		// wordList finden
@@ -57,13 +58,11 @@ public class ContextSearcher {
 
 		allContext.addAll(noPerfectMatches);
 		allContext.addAll(perfectMatches);
-		
-		
-		
+
 		System.out.println("ContextSearcher schreiben in 'gefundene Kontexte' fängt an");
 		try {
-			BufferedWriter bWriter = new BufferedWriter(
-					new OutputStreamWriter(new FileOutputStream("resources/gefundeneKontexteMINI.txt", false), "UTF-8"));
+			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream("resources/gefundeneKontexteMINI" + feature + ".txt", false), "UTF-8"));
 			for (Context context : allContext) {
 				bWriter.write(context.getTitle() + "\t" + context.getPathIndex() + "\n");
 			}
@@ -72,6 +71,7 @@ public class ContextSearcher {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		System.out.println("ContextSearcher schreiben in 'gefundene Kontexte' beendet");
 		return allContext;
 	}
 
@@ -79,7 +79,7 @@ public class ContextSearcher {
 	// soll nur einmal ausgeführt werden (da für alle (Stem/Lemma/nGram) gleich)
 	private void searchPerfectMatches() {
 		this.perfectMatches = new ArrayList<>();
-		this.noPerfectMatches= new ArrayList<>();
+		this.noPerfectMatches = new ArrayList<>();
 		for (String word : wordSet) {
 			Context context = new Context(word);
 			if (indexMap.containsKey(word)) {
@@ -109,12 +109,9 @@ public class ContextSearcher {
 			Map<String, String> featuredIndexMapCopy = new HashMap<>();
 			// !! jedes Mal Copy von der Millionen langen IndexMap
 			featuredIndexMapCopy.putAll(featuredIndexMap);
-			// TODO: hier noch absichern, dass bei mehrteiligen Worten
-			// (Start/Amadeus/merlin) auch mehr als 1
-			// teil im Titel des WikiArtikel gefunden wird -> aber wie?
 			featuredIndexMapCopy.keySet().retainAll(context.getFeaturedTitle());
 			context.setPath(new HashSet<String>(featuredIndexMapCopy.values()));
-			
+
 		}
 		System.out.println("-- Info: getothermatches ende --");
 	}
@@ -128,29 +125,24 @@ public class ContextSearcher {
 			List<String> titlesToBeProcessed = new ArrayList<>();
 			// tokens abspeichern zur Wiederverwendung (Stem/Lemma)
 			if (feature.needsTokenizing == true) {
-				titlesToBeProcessed= this.tokenizedTitles.get(titleOfArticle);
-				if(titlesToBeProcessed == null){
-					titlesToBeProcessed=tokenizeWords(titleOfArticle);
+				titlesToBeProcessed = this.tokenizedTitles.get(titleOfArticle);
+				if (titlesToBeProcessed == null) {
+					titlesToBeProcessed = tokenizeWords(titleOfArticle);
 					tokenizedTitles.put(titleOfArticle, titlesToBeProcessed);
 				}
-			
+
 			} else {
 				titlesToBeProcessed.add(titleOfArticle);
 			}
 			String path = indexMap.get(titleOfArticle);
 			// später zum auslesen der Artikels werden die
 			// Original-Title(titleOfArticle) noch einmal gebraucht
-
-			// wird jetzt feature.processWords bei jedem iterieren neu
-			// berechnet?
-			// also ist es so effizienter oder, wenn man es vorher als
-			// List<String> speichert 
 			List<String> featuredWords = feature.processWords(titlesToBeProcessed);
 			for (String featuredWord : featuredWords) {
 				featuredIndexMap.put(featuredWord, path);
 			}
 		}
-	
+
 		System.out.println("-- Info: featureIndexMap ende --");
 		return featuredIndexMap;
 	}
@@ -167,13 +159,45 @@ public class ContextSearcher {
 			if (!possibleArticlesPath.isEmpty()) {
 				for (String path : possibleArticlesPath) {
 					String[] pathSplit = path.split("\t");
-//					System.out.println("pathSPlit :"+pathSplit[1]+" , "+pathSplit[0]);
-					context.addContext(feature.processWords(readContextFromIndex(pathSplit[1], pathSplit[0])));
+					List<String> wordsOfWikiArticle = WikiReader.readContextFromIndex(pathSplit[1], pathSplit[0]);
+					List<String> wordsToBeProcessed = new ArrayList<>();
+					// schauen, ob tokenisiert werden soll
+					if (feature.needsTokenizing) {
+						try {
+							wordsToBeProcessed = tokenizeWords(wordsOfWikiArticle);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					} else {
+						wordsToBeProcessed.addAll(wordsOfWikiArticle);
+					}
+
+					// Für einen zu findenen Titel im Wikidump, wird nur dann
+					// Kontext hinzugefügt,wenn
+
+					List<String> processedWords = feature.processWords(wordsToBeProcessed);
+					// 1. der gefeaturte Titel aus mehr als 2 Teilwörtern
+					// besteht, aber min 2 davon im Kontext wiedergefunden
+					// werden (soll Matches wie Start/Amadeus/merlin <-> Amadeus
+					// Mozart) verhindern
+					if (context.getFeaturedTitle().size() > 2) {
+						int countMatches = 0;
+						for (String pieceOfTitle : context.getFeaturedTitle()) {
+							if (processedWords.contains(pieceOfTitle)) {
+								countMatches++;
+							}
+						}
+						if (countMatches > 1) {
+							context.addContext(processedWords);
+						}
+						// 2. der gefeaturte Titel aus höchstens 2 Wörtern
+						// besteht
+						// (dann wurde ja schon min einer beim Titelabgleich mit
+						// dem Wikititel gefunden
+					} else {
+						context.addContext(processedWords);
+					}
 				}
-//				System.out.println("Info: Kontext gefunden für " + context.getTitle());
-//
-//			} else {
-//				System.out.println("Info: Kein Kontext gefunden für " + context.getTitle());
 			}
 		}
 		System.out.println("-- Info: addContextFromPath ende --");
@@ -205,54 +229,20 @@ public class ContextSearcher {
 		return tokenizedWords;
 	}
 
-	// liest den Artikel mit dem Titel titel aus dem Pfad path aus
-	private static List<String> readContextFromIndex(String title, String path) {
-		// oder return-Objekt besser ein String? -> was verbraucht weniger
-		// Speicher?/geht schneller?
-		List<String> context = new ArrayList<>();
-		boolean contextFound = false;
-		try (BufferedReader bReader = new BufferedReader(new InputStreamReader(new FileInputStream(path), "UTF8"))) {
-			while (bReader.ready()) {
-				String line = bReader.readLine();
-				line = line.trim();
-				line = line.toLowerCase();
-				if (!line.isEmpty()) {
-					if (contextFound == true) {
-						context.add(line);
-					}
-					if (line.startsWith("<doc id") && line.contains(title)) {
-						contextFound = true;
-
-					}
-					if (line.equals("</doc>")) {
-						contextFound = false;
-						context.remove(line);
-					}
-
-				}
-
-			}
-		} catch (IOException ioe) {
-			ioe.printStackTrace();
-		}
-
-		return context;
-
-	}
-	
-	
-	
-	
-	public static void main(String[]args){
+	public static void main(String[] args) throws Exception {
+		//falls Index-Datei noch nicht erstellt wurde
+		Index.makeIndexFile();
+		
 		Set<String> articlesToSearch = new HashSet<>();
 		articlesToSearch.add("Flasche");
 		articlesToSearch.add("Lampe");
 		articlesToSearch.add("Türe");
-		
-		ContextSearcher contextsearcher = new ContextSearcher(articlesToSearch, Reader.readIndexFile());
+
+		ContextSearcher contextsearcher = new ContextSearcher(articlesToSearch, WikiReader.readIndexFile());
 		FeatureFactory featureFactory = new FeatureFactory();
 		Feature feature = featureFactory.createFeature("Lemmas");
 		List<Context> contextList = contextsearcher.getContext(feature);
+
 	}
 
 }

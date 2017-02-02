@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uk.spinfo.ml2016.Components.ContextSearcher;
 import de.uk.spinfo.ml2016.Components.Tokenizer;
 import de.uk.spinfo.ml2016.Structures.Tool;
 import de.uk.spinfo.ml2016.Structures.ToolPart;
 import de.uk.spinfo.ml2016.Structures.ToolSub;
+import wikiContext.ContextSearcher;
 
 public class TsvParser {
 
@@ -28,27 +28,26 @@ public class TsvParser {
 		return tools;
 	}
 
-	public Map<Integer, ToolPart> getToolParts() {
-		return toolParts;
-	}
+//	public Map<Integer, ToolPart> getToolParts() {
+//		return toolParts;
+//	}
 
-	public Set<ToolPart> getToolPartSet() {
-		Set<ToolPart> tpset = new HashSet<>();
-		for (Integer i : toolParts.keySet()) {
-			tpset.add(toolParts.get(i));
-		}
-		return tpset;
-	}
+//	public Set<ToolPart> getToolPartSet() {
+//		Set<ToolPart> tpset = new HashSet<>();
+//		for (Integer i : toolParts.keySet()) {
+//			tpset.add(toolParts.get(i));
+//		}
+//		return tpset;
+//	}
 
-	public Map<String, ToolSub> getToolSubs() {
-		return toolSubs;
-	}
+//	public Map<String, ToolSub> getToolSubs() {
+//		return toolSubs;
+//	}
 
 	public void parseTsv(File file) {
 		int toolcount = 0;
 		try (BufferedReader bReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"))) {
 
-			// bReader.readLine();
 			while (bReader.ready()) {
 
 				String line = bReader.readLine();
@@ -58,10 +57,8 @@ public class TsvParser {
 					List<String> context = new ArrayList<>();
 					//LOWERCASE
 					String name = lineSplit[0].toLowerCase();
-
 					Integer toolNumber = Integer.valueOf(Character.toString(lineSplit[2].charAt(1)));
 					String toolSubId = lineSplit[2].replace(")", "").replace("(", "");
-
 					String toolSubName = lineSplit[3];
 					if(!lineSplit[11].equalsIgnoreCase("na")){
 						context.add(lineSplit[11]);
@@ -76,23 +73,22 @@ public class TsvParser {
 					if (!tools.containsKey(name)) {
 						tools.put(name, tool);
 					}
-					//wenn die neuen Konstruktoren in Tool, ToolSub
-					//funktionieren bräuchte man diesen Teil nicht mehr
-					//es würden weider Sets reichen, statt Maps
-					ToolSub tmpToolsub = toolSubs.get(toolSubId);
-					if (tmpToolsub == null) {
-						tmpToolsub = ts;
-					}
-					tmpToolsub.addTool(tool);
-					toolSubs.put(toolSubId, tmpToolsub);
-
-					ToolPart tmpToolpart = toolParts.get(toolNumber);
-					if (tmpToolpart == null) {
-						tmpToolpart = tp;
-					}
-					tmpToolpart.addToolSub(tmpToolsub);
-
-					toolParts.put(toolNumber, tmpToolpart);
+					
+					//braucht man eigentlich nicht mehr:
+//					ToolSub tmpToolsub = toolSubs.get(toolSubId);
+//					if (tmpToolsub == null) {
+//						tmpToolsub = ts;
+//					}
+//					tmpToolsub.addTool(tool);
+//					toolSubs.put(toolSubId, tmpToolsub);
+//
+//					ToolPart tmpToolpart = toolParts.get(toolNumber);
+//					if (tmpToolpart == null) {
+//						tmpToolpart = tp;
+//					}
+//					tmpToolpart.addToolSub(tmpToolsub);
+//
+//					toolParts.put(toolNumber, tmpToolpart);
 				}
 
 			}
@@ -102,17 +98,6 @@ public class TsvParser {
 		IOException ioe) {
 			ioe.printStackTrace();
 		}
-//		for(ToolPart tp: getToolPartSet()){
-//			System.out.println(tp.getID()+"\n");
-//			for(ToolSub ts : tp.getToolSubSet()){
-//				System.out.println(ts.getID()+"\n");
-//				for(Tool tool:ts.getToolList()){
-//					System.out.println(tool.getName()+" ,");
-//				}
-//			}
-//			System.out.println("\n");
-//		}
-//		System.out.println(toolcount);
 	}
 	
 	public static void main(String[] args){

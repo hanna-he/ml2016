@@ -14,7 +14,6 @@ import de.uk.spinfo.ml2016.Structures.Tool;
 import is2.data.SentenceData09;
 
 public class Lemmas extends Feature {
-	public boolean needsTokenizing =true;
 	private is2.lemmatizer.Lemmatizer lemmatizer;
 
 	public Lemmas() {
