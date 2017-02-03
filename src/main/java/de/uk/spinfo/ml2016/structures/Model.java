@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Structures;
+package de.uk.spinfo.ml2016.structures;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,11 +31,18 @@ public class Model {
 			if (bowTmp.getID() == toolID) {
 				found = true;
 				bowTmp.addTool(tool);
+//				ToolSub ts = bowTmp.getToolSubWithId(tool.getToolSub().getID());
+//				ts.addTool(tool);
+//				bowTmp.addToolSub(ts);
+//				bowTmp.addToolSub(tool.getToolSub());
 			}
 		}
 		if(found == false){
 			BagOfWords bow = new BagOfWords(toolID);
 			bow.addTool(tool);
+//			ToolSub ts = tool.getToolSub();
+//			ts.addTool(tool);
+//			bow.addToolSub(tool.getToolSub());
 			this.bowList.add(bow);
 		}
 		

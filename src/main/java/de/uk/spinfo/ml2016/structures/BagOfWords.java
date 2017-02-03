@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Structures;
+package de.uk.spinfo.ml2016.structures;
 
 import java.util.ArrayList;
 import java.util.HashMap;

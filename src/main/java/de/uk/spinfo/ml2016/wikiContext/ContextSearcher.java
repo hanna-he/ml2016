@@ -1,4 +1,4 @@
-package wikiContext;
+package de.uk.spinfo.ml2016.wikiContext;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uk.spinfo.ml2016.Components.Feature;
-import de.uk.spinfo.ml2016.Components.FeatureFactory;
-import de.uk.spinfo.ml2016.Components.Tokenizer;
-import de.uk.spinfo.ml2016.Structures.Context;
+import de.uk.spinfo.ml2016.featuring.Feature;
+import de.uk.spinfo.ml2016.featuring.FeatureFactory;
+import de.uk.spinfo.ml2016.featuring.Tokenizer;
+import de.uk.spinfo.ml2016.structures.Context;
 
 public class ContextSearcher {
 	private Tokenizer tokenizer = null;

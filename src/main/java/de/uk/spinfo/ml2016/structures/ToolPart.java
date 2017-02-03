@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Structures;
+package de.uk.spinfo.ml2016.structures;
 
 import java.util.HashSet;
 import java.util.List;

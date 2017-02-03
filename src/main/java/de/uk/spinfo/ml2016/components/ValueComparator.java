@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Components;
+package de.uk.spinfo.ml2016.components;
 
 import java.util.Comparator;
 import java.util.Map;

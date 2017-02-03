@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Components;
+package de.uk.spinfo.ml2016.components;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import de.uk.spinfo.ml2016.Structures.BagOfWords;
-import de.uk.spinfo.ml2016.Structures.Model;
+import de.uk.spinfo.ml2016.structures.BagOfWords;
+import de.uk.spinfo.ml2016.structures.Model;
 
 public class ChiSquareCalculator {
 
@@ -50,7 +50,7 @@ public class ChiSquareCalculator {
 			BufferedWriter bWriter = new BufferedWriter(
 					new OutputStreamWriter(
 							new FileOutputStream(
-									"resources/" + keylistlength + "_keyWords_" + model.getFeature() + ".txt", false),
+									"resources/" + keylistlength + "_keyWordsNEU_" + model.getFeature() + ".txt", false),
 							"UTF-8"));
 			for (Integer id : keyWords.keySet()) {
 				bWriter.write("\n \n Class: " + id + "\n");

@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Structures;
+package de.uk.spinfo.ml2016.components;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -7,12 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import de.uk.spinfo.ml2016.Components.Cooccurrence;
-import de.uk.spinfo.ml2016.Components.Feature;
-import de.uk.spinfo.ml2016.Components.FeatureFactory;
+import de.uk.spinfo.ml2016.featuring.Feature;
+import de.uk.spinfo.ml2016.featuring.FeatureFactory;
 import de.uk.spinfo.ml2016.io.TsvParser;
-import wikiContext.ContextSearcher;
-import wikiContext.WikiReader;
+import de.uk.spinfo.ml2016.structures.BagOfWords;
+import de.uk.spinfo.ml2016.structures.Context;
+import de.uk.spinfo.ml2016.structures.Model;
+import de.uk.spinfo.ml2016.structures.Tool;
+import de.uk.spinfo.ml2016.wikiContext.ContextSearcher;
+import de.uk.spinfo.ml2016.wikiContext.WikiReader;
 
 public class ModelMaker {
 	private Map<String, Tool> toolMap = new HashMap<>();
@@ -80,6 +83,18 @@ public class ModelMaker {
 		Cooccurrence cooccurrence = new Cooccurrence(new HashSet<Tool>(this.toolMap.values()));
 		contextFoundInOtherTool = cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
 
+		
+		System.out.println("--- Model --- \n");
+		for(BagOfWords bow: model.getBagOfWordList()){
+			System.out.println(bow.getID()+"\n");
+			
+				for(Tool tool: bow.getTools()){
+					System.out.println(tool.getName()+" ("+tool.getFeaturedName()+")\n");
+				}
+			
+		}
+		
+		
 		System.out.println("-----Statistik-----");
 		System.out.println(featureString + "\n");
 		System.out.println("Insgesamt gibt es " + this.toolMap.size() + " Tools \n");
@@ -92,6 +107,9 @@ public class ModelMaker {
 		System.out.println("Für " + (toolsWoutContext.size() - contextFoundInOtherTool)
 				+ " Tools wurde gar keine Kontexte gefunden \n");
 
+		
+
+			
 		return model;
 	}
 	

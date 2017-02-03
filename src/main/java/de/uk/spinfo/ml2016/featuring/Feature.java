@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Components;
+package de.uk.spinfo.ml2016.featuring;
 
 
 import java.io.BufferedReader;
@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uk.spinfo.ml2016.Structures.Tool;
+import de.uk.spinfo.ml2016.structures.Tool;
 
 public abstract class Feature {
 	public boolean needsTokenizing = false;

@@ -17,10 +17,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import de.uk.spinfo.ml2016.Structures.BagOfWords;
-import de.uk.spinfo.ml2016.Structures.Model;
-import de.uk.spinfo.ml2016.Structures.Tool;
-import de.uk.spinfo.ml2016.Structures.ToolSub;
+import de.uk.spinfo.ml2016.structures.BagOfWords;
+import de.uk.spinfo.ml2016.structures.Model;
+import de.uk.spinfo.ml2016.structures.Tool;
+import de.uk.spinfo.ml2016.structures.ToolSub;
 
 public class JSONReader {
 
@@ -43,14 +43,14 @@ public class JSONReader {
 				int classID = longValue.intValue();
 				BagOfWords bow = new BagOfWords(classID);
 
-				JSONArray jsToolSubs = (JSONArray) obj2.get("ToolSubs");
-				for (int l = 0; l < jsToolSubs.size(); l++) {
-					JSONObject toolSubObj = (JSONObject) jsToolSubs.get(l);
-					String id = (String) toolSubObj.get("ID");
-					String name = (String) toolSubObj.get("Name");
-					ToolSub toolsub = new ToolSub(id, name);
-					bow.addToolSub(toolsub);
-				}
+//				JSONArray jsToolSubs = (JSONArray) obj2.get("ToolSubs");
+//				for (int l = 0; l < jsToolSubs.size(); l++) {
+//					JSONObject toolSubObj = (JSONObject) jsToolSubs.get(l);
+//					String id = (String) toolSubObj.get("ID");
+//					String name = (String) toolSubObj.get("Name");
+//					ToolSub toolsub = new ToolSub(id, name);
+//					bow.addToolSub(toolsub);
+//				}
 
 				JSONArray jsTool = (JSONArray) obj2.get("Tools");
 				for (int m = 0; m < jsTool.size(); m++) {
@@ -66,15 +66,15 @@ public class JSONReader {
 					}
 					Tool tool = new Tool(name, contextList, bow.getToolSubWithId(id));
 					tool.setWordCount(totalToolCount);
-					JSONArray jsWordList = (JSONArray) toolInfo.get("WordMap");
-					Map<String, Double> wordMap = new HashMap<>();
-					for (int n = 0; n < jsWordList.size(); n++) {
-						JSONObject wordValuePair = (JSONObject) jsWordList.get(n);
-						String word = (String) wordValuePair.get("Word");
-						Double value = (Double) wordValuePair.get("Value");
-						wordMap.put(word, value);
-					}
-					tool.setWordMap(wordMap);
+//					JSONArray jsWordList = (JSONArray) toolInfo.get("WordMap");
+//					Map<String, Double> wordMap = new HashMap<>();
+//					for (int n = 0; n < jsWordList.size(); n++) {
+//						JSONObject wordValuePair = (JSONObject) jsWordList.get(n);
+//						String word = (String) wordValuePair.get("Word");
+//						Double value = (Double) wordValuePair.get("Value");
+//						wordMap.put(word, value);
+//					}
+//					tool.setWordMap(wordMap);
 					bow.addTool(tool);
 				}
 

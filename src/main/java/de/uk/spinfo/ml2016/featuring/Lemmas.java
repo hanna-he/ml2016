@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Components;
+package de.uk.spinfo.ml2016.featuring;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import de.uk.spinfo.ml2016.Structures.Tool;
+import de.uk.spinfo.ml2016.structures.Tool;
 import is2.data.SentenceData09;
 
 public class Lemmas extends Feature {

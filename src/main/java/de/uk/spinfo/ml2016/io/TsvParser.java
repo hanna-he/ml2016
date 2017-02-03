@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import de.uk.spinfo.ml2016.Components.Tokenizer;
-import de.uk.spinfo.ml2016.Structures.Tool;
-import de.uk.spinfo.ml2016.Structures.ToolPart;
-import de.uk.spinfo.ml2016.Structures.ToolSub;
-import wikiContext.ContextSearcher;
+import de.uk.spinfo.ml2016.featuring.Tokenizer;
+import de.uk.spinfo.ml2016.structures.Tool;
+import de.uk.spinfo.ml2016.structures.ToolPart;
+import de.uk.spinfo.ml2016.structures.ToolSub;
+import de.uk.spinfo.ml2016.wikiContext.ContextSearcher;
 
 public class TsvParser {
 
@@ -45,7 +45,6 @@ public class TsvParser {
 //	}
 
 	public void parseTsv(File file) {
-		int toolcount = 0;
 		try (BufferedReader bReader = new BufferedReader(new InputStreamReader(new FileInputStream(file), "UTF8"))) {
 
 			while (bReader.ready()) {
@@ -69,9 +68,10 @@ public class TsvParser {
 					ToolSub ts = new ToolSub(toolSubId, toolSubName, tp);
 
 					Tool tool = new Tool(name, context, ts);
-					toolcount++;
+					
 					if (!tools.containsKey(name)) {
 						tools.put(name, tool);
+						
 					}
 					
 					//braucht man eigentlich nicht mehr:

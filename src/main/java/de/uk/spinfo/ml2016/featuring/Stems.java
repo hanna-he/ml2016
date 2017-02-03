@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Components;
+package de.uk.spinfo.ml2016.featuring;
 
 import java.util.ArrayList;
 import java.util.List;

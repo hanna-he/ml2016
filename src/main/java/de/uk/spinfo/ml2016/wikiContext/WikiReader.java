@@ -1,4 +1,4 @@
-package wikiContext;
+package de.uk.spinfo.ml2016.wikiContext;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;

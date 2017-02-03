@@ -7,13 +7,13 @@ import java.io.OutputStreamWriter;
 
 import com.google.gson.Gson;
 
+import de.uk.spinfo.ml2016.structures.BagOfWords;
+import de.uk.spinfo.ml2016.structures.Model;
+import de.uk.spinfo.ml2016.structures.Tool;
+import de.uk.spinfo.ml2016.structures.ToolSub;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-
-import de.uk.spinfo.ml2016.Structures.BagOfWords;
-import de.uk.spinfo.ml2016.Structures.Model;
-import de.uk.spinfo.ml2016.Structures.Tool;
-import de.uk.spinfo.ml2016.Structures.ToolSub;
 
 public class Writer {
 
@@ -80,6 +80,66 @@ public class Writer {
 
 	}
 
+	
+	public static void writeToJSON(Model model) {
+		String feature = model.getFeature();
+		try {
+			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream("resources/json/MINI_" + feature + ".json", false), "UTF-8"));
+
+			JSONObject obj1 = new JSONObject();
+			obj1.put("Feature", feature);
+			JSONArray jsClassList = new JSONArray();
+			for (BagOfWords bow : model.getBagOfWordList()) {
+				JSONObject obj2 = new JSONObject();
+//				JSONArray jsBowList = new JSONArray();
+//				for (String bowWord : bow.getWords()) {
+//					jsBowList.add(bowWord);
+//				}
+//
+//				obj2.put("Bag_Of_Words", jsBowList);
+
+				JSONArray jsTool = new JSONArray();
+				for (Tool tool : bow.getTools()) {
+					JSONObject toolInfo = new JSONObject();
+
+					JSONArray jsWordList = new JSONArray();
+					for (String word : tool.getWordMap().keySet()) {
+						JSONObject jsWord = new JSONObject();
+						jsWord.put("Word", word);
+						jsWord.put("Value", tool.getWordMap().get(word));
+						jsWordList.add(jsWord);
+					}
+					// damit man es später wieder einlesen kann
+//					toolInfo.put("WordMap", jsWordList);
+					toolInfo.put("ParentClass", tool.getToolSub().getID());
+					toolInfo.put("Context", tool.getFeaturedContext());
+					toolInfo.put("ToolName", tool.getName());
+					toolInfo.put("TotalToolCount", tool.getWordCount());
+					jsTool.add(toolInfo);
+				}
+				obj2.put("Tools", jsTool);
+
+//				JSONArray toolSubArray = new JSONArray();
+//				for (ToolSub toolsub : bow.getToolSubSet()) {
+//					JSONObject jsToolSub = new JSONObject();
+//					jsToolSub.put("ID", toolsub.getID());
+//					jsToolSub.put("Name", toolsub.getName());
+//					toolSubArray.add(jsToolSub);
+//				}
+//				obj2.put("ToolSubs", toolSubArray);
+				obj2.put("ClassId", bow.getID());
+				jsClassList.add(obj2);
+			}
+			obj1.put("Classes", jsClassList);
+			bWriter.write(obj1.toJSONString());
+			bWriter.flush();
+			bWriter.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 	
 	
 	

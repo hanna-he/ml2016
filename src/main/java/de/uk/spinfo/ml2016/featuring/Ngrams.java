@@ -1,11 +1,11 @@
-package de.uk.spinfo.ml2016.Components;
+package de.uk.spinfo.ml2016.featuring;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import de.uk.spinfo.ml2016.Structures.Tool;
+import de.uk.spinfo.ml2016.structures.Tool;
 
 public class Ngrams extends Feature {
 	private int len;

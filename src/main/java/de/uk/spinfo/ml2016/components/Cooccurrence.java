@@ -1,4 +1,4 @@
-package de.uk.spinfo.ml2016.Components;
+package de.uk.spinfo.ml2016.components;
 
 import java.io.BufferedWriter;
 import java.io.FileOutputStream;
@@ -15,9 +15,9 @@ import java.util.Set;
 
 import org.tartarus.snowball.ext.germanStemmer;
 
-import de.uk.spinfo.ml2016.Structures.Model;
-import de.uk.spinfo.ml2016.Structures.Tool;
-import de.uk.spinfo.ml2016.Structures.ToolPart;
+import de.uk.spinfo.ml2016.structures.Model;
+import de.uk.spinfo.ml2016.structures.Tool;
+import de.uk.spinfo.ml2016.structures.ToolPart;
 
 public class Cooccurrence {
 	private Set<Tool> toolSet;
@@ -46,11 +46,27 @@ public class Cooccurrence {
 		Map<Tool, Double> sortedReferencingToolsWithNumber = new HashMap<>();
 		for (Tool otherTool : this.toolSet) {
 			if (otherTool != tool) {
-				for (String word : tool.getFeaturedName()) {
-					if (otherTool.getWordMap().containsKey(word)) {
-						referencingToolsWithNumber.put(otherTool, otherTool.getWordMap().get(word));
+				// ein referenzierendes Tool, soll nur aufgenommen werden,
+				// wenn
+				int countMatches = 0;
+				double actualOccurence = 0.;
+				for (String pieceOfTitle : tool.getFeaturedName()) {
+					if (otherTool.getWordMap().containsKey(pieceOfTitle)) {
+						countMatches++;
+						actualOccurence += otherTool.getWordMap().get(pieceOfTitle);
 					}
 				}
+				// 1. der gefeaturte Titel aus mehr als 2 Teilwörtern
+				// besteht, aber min 2 davon im Kontext wiedergefunden
+				// werden, oder
+				if (tool.getFeaturedName().size() > 2 && countMatches > 1) {
+					referencingToolsWithNumber.put(otherTool, actualOccurence);
+					// 2. der gefeaturte Titel aus höchstens 2 Wörtern
+					// besteht und davon mindestens eins gefunden wird
+				} else if (tool.getFeaturedName().size() <= 2 && countMatches >= 1) {
+					referencingToolsWithNumber.put(otherTool, actualOccurence);
+				}
+				
 			}
 		}
 		sortedReferencingToolsWithNumber = ChiSquareCalculator.sort(referencingToolsWithNumber);
@@ -74,7 +90,7 @@ public class Cooccurrence {
 		int contextFound = 0;
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("resources/ToolsWithoutContext_" + model.getFeature() + "_Mini.txt", false),
+					new FileOutputStream("resources/ToolsWithoutContext_" + model.getFeature() + "_MiniNEU.txt", false),
 					"UTF-8"));
 			for (Tool toolagain : toolsWoutContext) {
 				getReferencingTools(toolagain);
@@ -86,7 +102,8 @@ public class Cooccurrence {
 
 					for (Tool refTool : toolagain.getReferencingTools()) {
 						bWriter.write(refTool.getName() + ", ");
-						toolagain.addContext(refTool.getContext());
+						toolagain.addFeaturedContext(refTool.getFeaturedContext());
+						toolagain.setWordMap(refTool.getWordMap());
 					}
 				}
 
