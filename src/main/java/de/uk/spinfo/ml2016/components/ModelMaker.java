@@ -84,16 +84,6 @@ public class ModelMaker {
 		contextFoundInOtherTool = cooccurrence.enrichContextWithReferencingTools(toolsWoutContext, model);
 
 		
-		System.out.println("--- Model --- \n");
-		for(BagOfWords bow: model.getBagOfWordList()){
-			System.out.println(bow.getID()+"\n");
-			
-				for(Tool tool: bow.getTools()){
-					System.out.println(tool.getName()+" ("+tool.getFeaturedName()+")\n");
-				}
-			
-		}
-		
 		
 		System.out.println("-----Statistik-----");
 		System.out.println(featureString + "\n");

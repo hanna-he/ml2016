@@ -62,7 +62,7 @@ public class ContextSearcher {
 		System.out.println("ContextSearcher schreiben in 'gefundene Kontexte' fängt an");
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("resources/gefundeneKontexteMINI" + feature + ".txt", false), "UTF-8"));
+					new FileOutputStream("resources/gefundeneKontexte" + feature + ".txt", false), "UTF-8"));
 			for (Context context : allContext) {
 				bWriter.write(context.getTitle() + "\t" + context.getPathIndex() + "\n");
 			}

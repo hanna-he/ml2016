@@ -33,7 +33,7 @@ public class App {
 //		 Writer.writeToJSON(model2);
 		
 		//Das Model wieder auslesen
-//		Model model4 = JSONReader.readJSONFile("resources/json/MINI_Stems.json");
+//		Model model4 = JSONReader.readJSONFile("resources/json/Stems.json");
 
 		System.out.println(end-start);
 		System.out.println(middel1-start);

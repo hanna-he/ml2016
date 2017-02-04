@@ -50,7 +50,7 @@ public class ChiSquareCalculator {
 			BufferedWriter bWriter = new BufferedWriter(
 					new OutputStreamWriter(
 							new FileOutputStream(
-									"resources/" + keylistlength + "_keyWordsNEU_" + model.getFeature() + ".txt", false),
+									"resources/" + keylistlength + "_keyWords_" + model.getFeature() + ".txt", false),
 							"UTF-8"));
 			for (Integer id : keyWords.keySet()) {
 				bWriter.write("\n \n Class: " + id + "\n");

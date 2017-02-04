@@ -21,7 +21,7 @@ public class Writer {
 		String feature = model.getFeature();
 		try {
 			BufferedWriter bWriter = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream("resources/json/MINI_" + feature + ".json", false), "UTF-8"));
+					new FileOutputStream("resources/json/" + feature + ".json", false), "UTF-8"));
 
 			JSONObject obj1 = new JSONObject();
 			obj1.put("Feature", feature);
