@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Preprocessing {
+	//test
 
 	public static void makeIndexFile() {
-
 		File f = new File("resources/extracted");
 
 		for (File folder : f.listFiles()) {
@@ -60,6 +60,7 @@ public class Preprocessing {
 							}
 
 							fWriter.flush();
+							fWriter.close();
 						} catch (IOException ioe) {
 							ioe.printStackTrace();
 						}
@@ -74,8 +75,10 @@ public class Preprocessing {
 		}
 	}
 public static void main(String[] args){
-		
+	final long start = System.currentTimeMillis();
 		Preprocessing.makeIndexFile();
+		final long end = System.currentTimeMillis();
+		System.out.println(end-start);
 	}
 
 }

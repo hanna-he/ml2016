@@ -14,7 +14,7 @@ public class WikiReader {
 	public static Map<String, String> readIndexFile() {
 		Map<String, String> index = new HashMap<>();
 		try (BufferedReader bReader = new BufferedReader(
-				new InputStreamReader(new FileInputStream("resources/sortedWiki/indexMini.txt"), "UTF8"))) {
+				new InputStreamReader(new FileInputStream("resources/sortedWiki/indexNeu.txt"), "UTF8"))) {
 			while (bReader.ready()) {
 				String line = bReader.readLine();
 				String[] lineSplit = line.split("\t");
@@ -41,18 +41,9 @@ public class WikiReader {
 					line = line.trim();
 					line = line.toLowerCase();
 					if (!line.isEmpty()) {
-						if (contextFound == true) {
+						
 							context.add(line);
-						}
-						if (line.startsWith("<doc id") && line.contains(title)) {
-							contextFound = true;
-
-						}
-						if (line.equals("</doc>")) {
-							contextFound = false;
-							context.remove(line);
-						}
-
+						
 					}
 
 				}

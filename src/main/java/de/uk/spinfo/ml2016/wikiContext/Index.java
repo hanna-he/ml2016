@@ -14,47 +14,32 @@ import java.util.List;
 public class Index {
 
 	public static void makeIndexFile() {
-		String fileOutputName= "resources/sortedWiki/indexMini.txt";
+		String fileOutputName = "resources/sortedWiki/indexNeu.txt";
 		File writeIn = new File(fileOutputName);
-		if(writeIn.exists()){
+		int i =0;
+		if (writeIn.exists()) {
 			writeIn.renameTo(new File("resources/sortedWiki/INDEX_alt.txt"));
 		}
-		File f = new File("resources/extractedWiki");
-		
-		for (File folder : f.listFiles()) {
-			for (String datafile : folder.list()) {
-				makeIndex(datafile, folder, fileOutputName);
-			}
-		}
-	}
-
-	private static void makeIndex(String datafile, File folder, String fileOutputName) {
-	
-		String title = "";
+		File f = new File("resources/WikiOneFilePerArticle_klein");
 		try (BufferedWriter fWriter = new BufferedWriter(
 				new OutputStreamWriter(new FileOutputStream(fileOutputName, true), "UTF-8"))) {
-			try (BufferedReader bReader = new BufferedReader(
-					new InputStreamReader(new FileInputStream(folder.toString() + "/" + datafile), "UTF8"))) {
-				while (bReader.ready()) {
-					String line = bReader.readLine();
-					if (line.startsWith("<doc id")) {
-						title = line.split("title=")[1].toLowerCase().replace("\"", "").replace(">", "");
-						fWriter.write(title + "\t" + folder.toString() + "/" + datafile+"\n");
-					}
-					
-				}
-			} catch (IOException ioe) {
-				ioe.printStackTrace();
+
+			for (String datafile : f.list()) {
+				fWriter.write(datafile + "\t" + f.toString()+"/" + datafile + "\n");
+				i ++;
 			}
 			fWriter.flush();
 			fWriter.close();
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
-		
+		System.out.println(i+ " Zeilen im Index");
+
 	}
-	public static void main(String[] args){
-		
+
+	
+	public static void main(String[] args) {
+
 		Index.makeIndexFile();
 	}
 
